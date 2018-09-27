@@ -1,0 +1,25 @@
+{
+  "name": "keksobooking-node",
+  "version": "0.0.1",
+  "description": "Server side for keksobooking project",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "5.6.0",
+    "eslint-config-htmlacademy": "0.5.2"
+  },
+  "scripts": {
+    "test:lint": "eslint .",
+    "test": "npm run test:lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ittisha/178490-keksobooking-1.git"
+  },
+  "author": "Anna Zezulkina",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ittisha/178490-keksobooking-1/issues"
+  },
+  "homepage": "https://github.com/Ittisha/178490-keksobooking-1#readme"
+}

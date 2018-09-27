@@ -1,10 +1,10 @@
-const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, AUTHOR, PROGRAM_TITLE} = require('./util-data');
+const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, AUTHOR, PROGRAM_TITLE} = require(`./util-data`);
 
 const inputArguments = process.argv.slice(2);
 
 class Program {
 
-  constructor (inputCommands, title, author) {
+  constructor(inputCommands, title, author) {
     this.inputCommands = inputCommands;
     this.title = title;
     this.author = author;
@@ -22,23 +22,21 @@ class Program {
         helpMessage: `печатает этот текст`,
       }
     };
-
-    this.init();
   }
 
   _getHelpOutput() {
     const commandsList = Object.entries(this.programCommands).map((command) =>
-    `${command[0]} - ${command[1].helpMessage}`).join(`\n`);
+      `${command[0]} - ${command[1].helpMessage}`).join(`\n`);
 
     return `Доступные команды\n${commandsList}`;
   }
 
   _getGreetingMessage() {
-    return `Привет пользователь!\nЭта программа будет запускать сервер «${this.title}».\nАвтор: ${this.author}.`
+    return `Привет пользователь!\nЭта программа будет запускать сервер «${this.title}».\nАвтор: ${this.author}.`;
   }
 
   _getErrorMessage(command) {
-    return `Неизвестная команда ${command}.\n Чтобы прочитать правила использования приложения, наберите "--help"`
+    return `Неизвестная команда ${command}.\n Чтобы прочитать правила использования приложения, наберите "--help"`;
   }
 
   _printOutput(outputMessage, exitCode) {
@@ -68,4 +66,5 @@ class Program {
   }
 }
 
-const programm = new Program(inputArguments, PROGRAM_TITLE, AUTHOR);
+const program = new Program(inputArguments, PROGRAM_TITLE, AUTHOR);
+program.init();
