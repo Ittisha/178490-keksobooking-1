@@ -32,10 +32,10 @@ class Program {
   _getHelpOutput(commandsDescr) {
     let commandsList = `Доступные команды`;
 
-    for (let command in commandsDescr) {
+    for (const command in commandsDescr) {
       commandsList = `${commandsList}\n ${command} - ${commandsDescr[command].helpMessage}`
     }
-    
+
     return commandsList;
   }
 
