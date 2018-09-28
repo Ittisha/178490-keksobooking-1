@@ -1,42 +1,27 @@
-const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, AUTHOR, PROGRAM_TITLE} = require(`./util-data`);
+const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, PROGRAM_TITLE} = require(`./src/util-data`);
+const version = require(`./src/commands/version`);
+const help = require(`./src/commands/help`);
+const license = require(`./src/commands/license`);
+const author = require(`./src/commands/author`);
+const description = require(`./src/commands/description`);
 
 const inputArguments = process.argv.slice(2);
 
 class Program {
 
-  constructor(inputCommands, title, author) {
+  constructor(inputCommands, title) {
     this.inputCommands = inputCommands;
     this.title = title;
-    this.author = author;
 
-    this.programCommands = {
-      '--version': {
-        output: () => `v.0.0.1`,
-        exitCode: SUCCESS_CODE,
-        helpMessage: `печатает версию приложения`,
-      },
-
-      '--help': {
-        output: () => this._getHelpOutput(),
-        exitCode: SUCCESS_CODE,
-        helpMessage: `печатает этот текст`,
-      }
-    };
-  }
-
-  _getHelpOutput() {
-    const commandsList = Object.entries(this.programCommands).map((command) =>
-      `${command[0]} - ${command[1].helpMessage}`).join(`\n`);
-
-    return `Доступные команды\n${commandsList}`;
+    this.programCommands = [version, help, license, author, description];
   }
 
   _getGreetingMessage() {
-    return `Привет пользователь!\nЭта программа будет запускать сервер «${this.title}».\nАвтор: ${this.author}.`;
+    return `Hi user!\nThis program will start the server «${this.title}».\nAuthor: ${author.execute()}.`;
   }
 
   _getErrorMessage(command) {
-    return `Неизвестная команда ${command}.\n Чтобы прочитать правила использования приложения, наберите "--help"`;
+    return `Unknown command ${command}`;
   }
 
   _printOutput(outputMessage, exitCode) {
@@ -54,10 +39,12 @@ class Program {
     }
 
     for (const command of this.inputCommands) {
-      if (this.programCommands[command]) {
-        this._printOutput(this.programCommands[command].output(), SUCCESS_CODE);
+      const requiredCommand = this.programCommands.find((item) => command.slice(2) === item.name);
+      if (requiredCommand) {
+        this._printOutput(requiredCommand.execute(), SUCCESS_CODE);
       } else {
         this._printOutput(this._getErrorMessage(command), ERROR_CODE);
+        console.log(help.execute());
         process.exit(ERROR_CODE);
       }
     }
@@ -66,5 +53,5 @@ class Program {
   }
 }
 
-const program = new Program(inputArguments, PROGRAM_TITLE, AUTHOR);
+const program = new Program(inputArguments, PROGRAM_TITLE);
 program.init();
