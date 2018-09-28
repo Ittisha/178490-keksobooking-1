@@ -1,13 +1,10 @@
-const SUCCESS_CODE = 0;
-const ERROR_CODE = 1;
-const ERROR_COLOR = `\x1b[31m`;
-const DEFAULT_COLOR = `\x1b[0m`;
+const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, AUTHOR, PROGRAM_TITLE} = require(`./util-data`);
 
 const inputArguments = process.argv.slice(2);
 
 class Program {
 
-  constructor (inputCommands, title = `Keksobooking`, author = `Anna`) {
+  constructor(inputCommands, title, author) {
     this.inputCommands = inputCommands;
     this.title = title;
     this.author = author;
@@ -20,40 +17,35 @@ class Program {
       },
 
       '--help': {
-        output: () => this._getHelpOutput(this.programCommands),
+        output: () => this._getHelpOutput(),
         exitCode: SUCCESS_CODE,
         helpMessage: `печатает этот текст`,
       }
     };
-
-    this.init();
   }
 
-  _getHelpOutput(commandsDescr) {
-    let commandsList = `Доступные команды`;
+  _getHelpOutput() {
+    const commandsList = Object.entries(this.programCommands).map((command) =>
+      `${command[0]} - ${command[1].helpMessage}`).join(`\n`);
 
-    for (const command in commandsDescr) {
-      commandsList = `${commandsList}\n ${command} - ${commandsDescr[command].helpMessage}`
-    }
-
-    return commandsList;
+    return `Доступные команды\n${commandsList}`;
   }
 
   _getGreetingMessage() {
-    return `Привет пользователь!\nЭта программа будет запускать сервер «${this.title}».\nАвтор: ${this.author}.`
+    return `Привет пользователь!\nЭта программа будет запускать сервер «${this.title}».\nАвтор: ${this.author}.`;
   }
 
   _getErrorMessage(command) {
-    return `Неизвестная команда ${command}.\n Чтобы прочитать правила использования приложения, наберите "--help"`
+    return `Неизвестная команда ${command}.\n Чтобы прочитать правила использования приложения, наберите "--help"`;
   }
 
   _printOutput(outputMessage, exitCode) {
-    if (exitCode === SUCCESS_CODE) {
-      console.log(outputMessage);
+    if (exitCode === ERROR_CODE) {
+      console.error(ERROR_COLOR, outputMessage, DEFAULT_COLOR);
       return;
     }
 
-    console.error(ERROR_COLOR, outputMessage, DEFAULT_COLOR);
+    console.log(outputMessage);
   }
 
   init() {
@@ -74,4 +66,5 @@ class Program {
   }
 }
 
-const programm = new Program(inputArguments);
+const program = new Program(inputArguments, PROGRAM_TITLE, AUTHOR);
+program.init();
