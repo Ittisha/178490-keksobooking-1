@@ -1,9 +1,10 @@
+require(`colors`);
 const AbstractCommand = require(`./abstract-command`);
 const packageInfo = require(`../../package.json`);
 
 class License extends AbstractCommand {
   execute() {
-    return packageInfo.license;
+    return packageInfo.license.yellow;
   }
 }
 

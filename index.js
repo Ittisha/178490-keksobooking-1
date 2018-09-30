@@ -1,4 +1,5 @@
-const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, PROGRAM_TITLE} = require(`./src/utils/util-data`);
+require(`colors`);
+const {SUCCESS_CODE, ERROR_CODE, PROGRAM_TITLE} = require(`./src/utils/util-data`);
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
 
@@ -30,12 +31,12 @@ class Program {
   }
 
   static getErrorMessage(command) {
-    return `Unknown command ${command}`;
+    return `Unknown command ${command}`.red;
   }
 
   static printOutput(outputMessage, exitCode) {
     if (exitCode === ERROR_CODE) {
-      console.error(ERROR_COLOR, outputMessage, DEFAULT_COLOR);
+      console.error(outputMessage);
       return;
     }
 
