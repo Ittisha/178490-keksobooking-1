@@ -1,30 +1,39 @@
-const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, PROGRAM_TITLE} = require(`./src/util-data`);
-const version = require(`./src/commands/version`);
+const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, PROGRAM_TITLE} = require(`./src/utils/util-data`);
+const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
-const license = require(`./src/commands/license`);
-const author = require(`./src/commands/author`);
-const description = require(`./src/commands/description`);
 
 const inputArguments = process.argv.slice(2);
 
 class Program {
+  static init(inputCommands) {
+    if (!inputCommands.length) {
+      Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
+    }
 
-  constructor(inputCommands, title) {
-    this.inputCommands = inputCommands;
-    this.title = title;
+    for (const command of inputCommands) {
+      const requiredCommand = Program.getModule(command.slice(2));
 
-    this.programCommands = [version, help, license, author, description];
+      if (requiredCommand) {
+        Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
+      } else {
+        Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
+        console.log(help.execute());
+        process.exit(ERROR_CODE);
+      }
+    }
+
+    process.exit(SUCCESS_CODE);
   }
 
-  _getGreetingMessage() {
-    return `Hi user!\nThis program will start the server «${this.title}».\nAuthor: ${author.execute()}.`;
+  static getGreetingMessage() {
+    return `Hi user!\nThis program will start the server «${PROGRAM_TITLE}».\nAuthor: ${authorInfo}.`;
   }
 
-  _getErrorMessage(command) {
+  static getErrorMessage(command) {
     return `Unknown command ${command}`;
   }
 
-  _printOutput(outputMessage, exitCode) {
+  static printOutput(outputMessage, exitCode) {
     if (exitCode === ERROR_CODE) {
       console.error(ERROR_COLOR, outputMessage, DEFAULT_COLOR);
       return;
@@ -33,25 +42,13 @@ class Program {
     console.log(outputMessage);
   }
 
-  init() {
-    if (!this.inputCommands.length) {
-      this._printOutput(this._getGreetingMessage(), SUCCESS_CODE);
+  static getModule(moduleName) {
+    try {
+      return require(`./src/commands/${moduleName}`);
+    } catch (error) {
+      return void 0;
     }
-
-    for (const command of this.inputCommands) {
-      const requiredCommand = this.programCommands.find((item) => command.slice(2) === item.name);
-      if (requiredCommand) {
-        this._printOutput(requiredCommand.execute(), SUCCESS_CODE);
-      } else {
-        this._printOutput(this._getErrorMessage(command), ERROR_CODE);
-        console.log(help.execute());
-        process.exit(ERROR_CODE);
-      }
-    }
-
-    process.exit(SUCCESS_CODE);
   }
 }
 
-const program = new Program(inputArguments, PROGRAM_TITLE);
-program.init();
+Program.init(inputArguments);
