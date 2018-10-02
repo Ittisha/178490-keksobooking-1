@@ -1,49 +1,23 @@
-const {SUCCESS_CODE, ERROR_CODE, ERROR_COLOR, DEFAULT_COLOR, PROGRAM_TITLE} = require(`./src/util-data`);
-const version = require(`./src/commands/version`);
+require(`colors`);
+const {SUCCESS_CODE, ERROR_CODE, PROGRAM_TITLE} = require(`./src/utils/util-data`);
+const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
-const license = require(`./src/commands/license`);
-const author = require(`./src/commands/author`);
-const description = require(`./src/commands/description`);
 
 const inputArguments = process.argv.slice(2);
 
 class Program {
-
-  constructor(inputCommands, title) {
-    this.inputCommands = inputCommands;
-    this.title = title;
-
-    this.programCommands = [version, help, license, author, description];
-  }
-
-  _getGreetingMessage() {
-    return `Hi user!\nThis program will start the server «${this.title}».\nAuthor: ${author.execute()}.`;
-  }
-
-  _getErrorMessage(command) {
-    return `Unknown command ${command}`;
-  }
-
-  _printOutput(outputMessage, exitCode) {
-    if (exitCode === ERROR_CODE) {
-      console.error(ERROR_COLOR, outputMessage, DEFAULT_COLOR);
-      return;
+  static init(inputCommands) {
+    if (!inputCommands.length) {
+      Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
     }
 
-    console.log(outputMessage);
-  }
+    for (const command of inputCommands) {
+      const requiredCommand = Program.getModule(command.slice(2));
 
-  init() {
-    if (!this.inputCommands.length) {
-      this._printOutput(this._getGreetingMessage(), SUCCESS_CODE);
-    }
-
-    for (const command of this.inputCommands) {
-      const requiredCommand = this.programCommands.find((item) => command.slice(2) === item.name);
       if (requiredCommand) {
-        this._printOutput(requiredCommand.execute(), SUCCESS_CODE);
+        Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
       } else {
-        this._printOutput(this._getErrorMessage(command), ERROR_CODE);
+        Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
         console.log(help.execute());
         process.exit(ERROR_CODE);
       }
@@ -51,7 +25,31 @@ class Program {
 
     process.exit(SUCCESS_CODE);
   }
+
+  static getGreetingMessage() {
+    return `Hi user!\nThis program will start the server «${PROGRAM_TITLE}».\nAuthor: ${authorInfo}.`;
+  }
+
+  static getErrorMessage(command) {
+    return `Unknown command ${command}`.red;
+  }
+
+  static printOutput(outputMessage, exitCode) {
+    if (exitCode === ERROR_CODE) {
+      console.error(outputMessage);
+      return;
+    }
+
+    console.log(outputMessage);
+  }
+
+  static getModule(moduleName) {
+    try {
+      return require(`./src/commands/${moduleName}`);
+    } catch (error) {
+      return void 0;
+    }
+  }
 }
 
-const program = new Program(inputArguments, PROGRAM_TITLE);
-program.init();
+Program.init(inputArguments);

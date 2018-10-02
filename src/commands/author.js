@@ -1,9 +1,9 @@
 const AbstractCommand = require(`./abstract-command`);
-const packageAuthor = require(`../../package.json`);
+const packageInfo = require(`../../package.json`);
 
 class Author extends AbstractCommand {
   execute() {
-    return packageAuthor.author;
+    return packageInfo.author;
   }
 }
 
