@@ -1,4 +1,4 @@
-require(`colors`);
+const colors = require(`colors`);
 const AbsctractCommand = require(`./abstract-command`);
 const version = require(`./version`);
 const license = require(`./license`);
@@ -18,7 +18,7 @@ class Help extends AbsctractCommand {
   _getHelpOutput() {
     const commandsList = commands.map((command) => `${(prefix + command.name).grey} - ${command.description.green}`).join(`\n`);
 
-    return `Available commands\n${`--help`.grey} - ${`Shows available commands`.green}\n${commandsList}`;
+    return `Available commands\n${colors.grey(`--help`)} - ${colors.green(`Shows available commands`)}\n${commandsList}`;
   }
 }
 

@@ -1,9 +1,9 @@
-require(`colors`);
-const {SUCCESS_CODE, ERROR_CODE, PROGRAM_TITLE} = require(`./src/utils/util-data`);
+const colors = require(`colors`);
+const {SUCCESS_CODE, ERROR_CODE, PROGRAM_TITLE, COMMAND_PREFIX_LENGH, PATH_ARGS_LENGTH} = require(`./src/utils/util-data`);
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
 
-const inputArguments = process.argv.slice(2);
+const inputArguments = process.argv.slice(PATH_ARGS_LENGTH);
 
 class Program {
   static init(inputCommands) {
@@ -12,15 +12,15 @@ class Program {
     }
 
     for (const command of inputCommands) {
-      const requiredCommand = Program.getModule(command.slice(2));
+      const requiredCommand = Program.getModule(command.slice(COMMAND_PREFIX_LENGH));
 
-      if (requiredCommand) {
-        Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
-      } else {
+      if (!requiredCommand) {
         Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
         console.log(help.execute());
         process.exit(ERROR_CODE);
       }
+
+      Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
     }
 
     process.exit(SUCCESS_CODE);
@@ -31,7 +31,7 @@ class Program {
   }
 
   static getErrorMessage(command) {
-    return `Unknown command ${command}`.red;
+    return colors.red(`Unknown command ${command}`);
   }
 
   static printOutput(outputMessage, exitCode) {

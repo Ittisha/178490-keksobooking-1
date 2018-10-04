@@ -1,11 +1,12 @@
-require(`colors`);
+const colors = require(`colors`);
 const AbstractCommand = require(`./abstract-command`);
 const packageInfo = require(`../../package.json`);
+const {MAJOR_RELEASES_INDEX, MINOR_RELEASES_INDEX, PATCH_RELEASES_INDEX} = require(`../utils/util-data`);
 
 class Version extends AbstractCommand {
   execute() {
     const ranges = packageInfo.version.split(`.`);
-    return `v${ranges[0].red}.${ranges[1].green}.${ranges[2].blue}`;
+    return `v${colors.red(ranges[MAJOR_RELEASES_INDEX])}.${colors.green(ranges[MINOR_RELEASES_INDEX])}.${colors.blue(ranges[PATCH_RELEASES_INDEX])}`;
   }
 }
 
