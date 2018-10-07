@@ -1,5 +1,8 @@
 const colors = require(`colors`);
-const {SUCCESS_CODE, ERROR_CODE, PROGRAM_TITLE, COMMAND_PREFIX_LENGH, PATH_ARGS_LENGTH} = require(`./src/utils/util-data`);
+const {SUCCESS_CODE,
+  ERROR_CODE, PROGRAM_TITLE,
+  COMMAND_PREFIX_LENGH,
+  PATH_ARGS_LENGTH} = require(`./src/utils/util-constants`);
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
 
