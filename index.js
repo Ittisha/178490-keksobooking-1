@@ -5,15 +5,21 @@ const {SUCCESS_CODE,
   PATH_ARGS_LENGTH} = require(`./src/utils/util-constants`);
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
+const {startProgram} = require(`./src/input-parser`);
 
 const inputArguments = process.argv.slice(PATH_ARGS_LENGTH);
 
 class Program {
   static init(inputCommands) {
-    if (!inputCommands.length) {
-      Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
+    if (inputCommands.length) {
+      Program.executeCommand(inputCommands);
     }
 
+    Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
+    startProgram();
+  }
+
+  static executeCommand(inputCommands) {
     for (const command of inputCommands) {
       const requiredCommand = Program.getModule(command.slice(COMMAND_PREFIX_LENGH));
 

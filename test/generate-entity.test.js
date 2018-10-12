@@ -108,12 +108,12 @@ describe(`Function generatyEntity`, () => {
       assert.strictEqual(typeof price, `number`);
     });
 
-    it(`should be >= ${PriceInterval.min}`, () => {
-      assert.ok(price >= PriceInterval.min, `Price should be equal or over than ${PriceInterval.min}`);
+    it(`should be >= ${PriceInterval.MIN}`, () => {
+      assert.ok(price >= PriceInterval.MIN, `Price should be equal or over than ${PriceInterval.MIN}`);
     });
 
-    it(`should be <= ${PriceInterval.max}`, () => {
-      assert.ok(price <= PriceInterval.max, `Price should be less or equl to ${PriceInterval.max}`);
+    it(`should be <= ${PriceInterval.MAX}`, () => {
+      assert.ok(price <= PriceInterval.MAX, `Price should be less or equl to ${PriceInterval.MAX}`);
     });
   });
 
@@ -133,12 +133,12 @@ describe(`Function generatyEntity`, () => {
       assert.strictEqual(typeof roomsQuantity, `number`);
     });
 
-    it(`should be >= ${RoomsNumber.min}`, () => {
-      assert.ok(roomsQuantity >= RoomsNumber.min, `Rooms quantity should be equal or more than ${RoomsNumber.min}`);
+    it(`should be >= ${RoomsNumber.MIN}`, () => {
+      assert.ok(roomsQuantity >= RoomsNumber.MIN, `Rooms quantity should be equal or more than ${RoomsNumber.MIN}`);
     });
 
-    it(`should be <= ${RoomsNumber.max}`, () => {
-      assert.ok(roomsQuantity <= RoomsNumber.max, `Rooms quantity should be less or equal to ${RoomsNumber.max}`);
+    it(`should be <= ${RoomsNumber.MAX}`, () => {
+      assert.ok(roomsQuantity <= RoomsNumber.MAX, `Rooms quantity should be less or equal to ${RoomsNumber.MAX}`);
     });
   });
 
@@ -149,8 +149,8 @@ describe(`Function generatyEntity`, () => {
       assert.strictEqual(typeof guestsQuantity, `number`);
     });
 
-    it(`should be >= ${GuestsNumber.min}`, () => {
-      assert.ok(guestsQuantity >= GuestsNumber.min, `Guests quantity should be equal or more than ${GuestsNumber.min}`);
+    it(`should be >= ${GuestsNumber.MIN}`, () => {
+      assert.ok(guestsQuantity >= GuestsNumber.MIN, `Guests quantity should be equal or more than ${GuestsNumber.MIN}`);
     });
   });
 
@@ -247,12 +247,12 @@ describe(`Function generatyEntity`, () => {
       assert.strictEqual(typeof xPoint, `number`);
     });
 
-    it(`should be >= ${CoordinateX.min}`, () => {
-      assert.ok(xPoint >= CoordinateX.min, `X should be equal or over than ${CoordinateX.min}`);
+    it(`should be >= ${CoordinateX.MIN}`, () => {
+      assert.ok(xPoint >= CoordinateX.MIN, `X should be equal or over than ${CoordinateX.MIN}`);
     });
 
-    it(`should be <= ${CoordinateX.max}`, () => {
-      assert.ok(xPoint <= CoordinateX.max, `X should be less or equal to ${CoordinateX.max}`);
+    it(`should be <= ${CoordinateX.MAX}`, () => {
+      assert.ok(xPoint <= CoordinateX.MAX, `X should be less or equal to ${CoordinateX.MAX}`);
     });
   });
 
@@ -263,12 +263,12 @@ describe(`Function generatyEntity`, () => {
       assert.strictEqual(typeof yPoint, `number`);
     });
 
-    it(`should be >= ${CoordinateY.min}`, () => {
-      assert.ok(yPoint >= CoordinateY.min, `Y should be equal or over than ${CoordinateY.min}`);
+    it(`should be >= ${CoordinateY.MIN}`, () => {
+      assert.ok(yPoint >= CoordinateY.MIN, `Y should be equal or over than ${CoordinateY.MIN}`);
     });
 
-    it(`should be <= ${CoordinateY.max}`, () => {
-      assert.ok(yPoint <= CoordinateY.max, `Y should be less or equal to ${CoordinateY.max}`);
+    it(`should be <= ${CoordinateY.MAX}`, () => {
+      assert.ok(yPoint <= CoordinateY.MAX, `Y should be less or equal to ${CoordinateY.MAX}`);
     });
   });
 

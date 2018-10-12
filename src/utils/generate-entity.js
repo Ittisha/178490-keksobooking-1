@@ -16,11 +16,11 @@ const {OFFER_TITLES,
   CoordinateY,
   TIME_INTERVAL} = require(`./util-constants`);
 
-const locationX = getRandomInteger(CoordinateX.min, CoordinateX.max);
-
-const locationY = getRandomInteger(CoordinateY.min, CoordinateY.max);
-
 const generateEntity = () => {
+  const locationX = getRandomInteger(CoordinateX.MIN, CoordinateX.MAX);
+
+  const locationY = getRandomInteger(CoordinateY.MIN, CoordinateY.MAX);
+
   return {
     'author': {
       'avatar': `https://robohash.org/${getRandomString()}`,
@@ -28,10 +28,10 @@ const generateEntity = () => {
     'offer': {
       'title': getRandomArrayItem(OFFER_TITLES),
       'address': `${locationX}, ${locationY}`,
-      'price': getRandomInteger(PriceInterval.min, PriceInterval.max),
+      'price': getRandomInteger(PriceInterval.MIN, PriceInterval.MAX),
       'type': getRandomArrayItem(BUNGALO_TYPES),
-      'rooms': getRandomInteger(RoomsNumber.min, RoomsNumber.max),
-      'guests': getRandomInteger(GuestsNumber.min, GuestsNumber.max),
+      'rooms': getRandomInteger(RoomsNumber.MIN, RoomsNumber.MAX),
+      'guests': getRandomInteger(GuestsNumber.MIN, GuestsNumber.MAX),
       'checkin': getRandomArrayItem(CHECK_IN_OUT_TIMES),
       'checkout': getRandomArrayItem(CHECK_IN_OUT_TIMES),
       'features': getUniqueArray(FEATURES),

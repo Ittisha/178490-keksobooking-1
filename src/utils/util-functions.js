@@ -21,7 +21,7 @@ module.exports.getUniqueArray = (array) => {
   const newFeatures = [];
   newFeatures.length = getRandomInteger(1, array.length);
 
-  const featuresSet = new Set(newFeatures.map(() => getRandomArrayItem(array)));
+  const featuresSet = new Set(newFeatures.fill().map(() => getRandomArrayItem(array)));
 
   return Array.from(featuresSet);
 };
