@@ -97,6 +97,7 @@ module.exports.startProgram = async () => {
     console.log(`The data were saved. Path: ${path}`);
   } catch (err) {
     console.error(err.message);
+    process.exit(ERROR_CODE);
   }
   process.exit(SUCCESS_CODE);
 };
