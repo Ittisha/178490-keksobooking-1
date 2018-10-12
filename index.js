@@ -16,7 +16,10 @@ class Program {
     }
 
     Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
-    startProgram();
+    startProgram().catch((err) => {
+      console.error(err);
+      process.exit(ERROR_CODE);
+    });
   }
 
   static executeCommand(inputCommands) {

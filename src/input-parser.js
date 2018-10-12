@@ -81,19 +81,31 @@ const getSavingPath = () => {
 const writeToFile = promisify(fs.writeFile);
 
 module.exports.startProgram = async () => {
-  await repeatQuestion(shouldStart);
-  let entetiesQuantity = await repeatQuestion(getEntitiesQuantity);
-  const path = await repeatQuestion(getSavingPath);
-  const data = [];
+  await repeatQuestion(shouldStart).catch((err) => {
+    console.error(err);
+    process.exit(ERROR_CODE);
+  });
+
+  let entetiesQuantity = await repeatQuestion(getEntitiesQuantity).catch((err) => {
+    console.error(err);
+    process.exit(ERROR_CODE);
+  });
+
+  const path = await repeatQuestion(getSavingPath).catch((err) => {
+    console.error(err);
+    process.exit(ERROR_CODE);
+  });
+
+  const entities = [];
 
   while (entetiesQuantity > 0) {
     const entity = generateEntity();
-    data.push(entity);
+    entities.push(entity);
     --entetiesQuantity;
   }
 
   try {
-    await writeToFile(path, JSON.stringify(data));
+    await writeToFile(path, JSON.stringify(entities));
     console.log(`The data were saved. Path: ${path}`);
   } catch (err) {
     console.error(err.message);
