@@ -5,7 +5,7 @@ const {SUCCESS_CODE,
   PATH_ARGS_LENGTH} = require(`./src/utils/util-constants`);
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
-const {startProgram} = require(`./src/input-parser`);
+const {parseInitialInput} = require(`./src/input-parser`);
 
 const inputArguments = process.argv.slice(PATH_ARGS_LENGTH);
 
@@ -16,7 +16,7 @@ class Program {
     }
 
     Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
-    startProgram().catch((err) => {
+    parseInitialInput().catch((err) => {
       console.error(err);
       process.exit(ERROR_CODE);
     });

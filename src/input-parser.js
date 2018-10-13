@@ -80,7 +80,7 @@ const getSavingPath = () => {
 
 const writeToFile = promisify(fs.writeFile);
 
-module.exports.startProgram = async () => {
+module.exports.parseInitialInput = async () => {
   await repeatQuestion(shouldStart).catch((err) => {
     console.error(err);
     process.exit(ERROR_CODE);
