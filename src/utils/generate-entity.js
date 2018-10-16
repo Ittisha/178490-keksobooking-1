@@ -4,6 +4,7 @@ const {getRandomString,
   getUniqueArray,
   shuffleArray,
   getDate} = require(`./util-functions`);
+
 const {OFFER_TITLES,
   BUNGALO_TYPES,
   RoomsNumber,
@@ -14,7 +15,8 @@ const {OFFER_TITLES,
   PHOTO_URLS,
   CoordinateX,
   CoordinateY,
-  TIME_INTERVAL} = require(`./util-constants`);
+  TIME_INTERVAL,
+  URL_HOST} = require(`./util-constants`);
 
 const generateEntity = () => {
   const locationX = getRandomInteger(CoordinateX.MIN, CoordinateX.MAX);
@@ -23,7 +25,7 @@ const generateEntity = () => {
 
   return {
     'author': {
-      'avatar': `https://robohash.org/${getRandomString()}`,
+      'avatar': URL_HOST + getRandomString(),
     },
     'offer': {
       'title': getRandomArrayItem(OFFER_TITLES),

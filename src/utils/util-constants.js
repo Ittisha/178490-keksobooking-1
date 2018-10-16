@@ -9,6 +9,7 @@ module.exports.PATCH_RELEASES_INDEX = 2;
 module.exports.RANDOM_STRING_RADIX = 36;
 module.exports.BEGIN_SLICE_INDEX = 2;
 module.exports.TIME_INTERVAL = 1000 * 60 * 60 * 24 * 7;
+module.exports.URL_HOST = `https://robohash.org/`;
 
 module.exports.EXPECTED_OFFER_PROPERTIES = [`title`, `address`, `price`, `type`, `rooms`, `guests`, `checkin`, `checkout`, `features`, `description`, `photos`];
 

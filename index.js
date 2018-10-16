@@ -5,34 +5,41 @@ const {SUCCESS_CODE,
   PATH_ARGS_LENGTH} = require(`./src/utils/util-constants`);
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
-const {startProgram} = require(`./src/input-parser`);
+const {parseInitialInput} = require(`./src/input-parser`);
 
 const inputArguments = process.argv.slice(PATH_ARGS_LENGTH);
 
 class Program {
   static init(inputCommands) {
-    if (inputCommands.length) {
+    if (!inputCommands.length) {
+      Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
+      parseInitialInput().catch((err) => {
+        console.error(err);
+        process.exit(ERROR_CODE);
+      });
+    } else {
       Program.executeCommand(inputCommands);
     }
-
-    Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
-    startProgram();
   }
 
   static executeCommand(inputCommands) {
-    for (const command of inputCommands) {
-      const requiredCommand = Program.getModule(command.slice(COMMAND_PREFIX_LENGH));
+    const command = inputCommands[0];
+    const requiredCommand = Program.getModule(command.slice(COMMAND_PREFIX_LENGH));
 
-      if (!requiredCommand) {
-        Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
-        console.log(help.execute());
-        process.exit(ERROR_CODE);
-      }
-
-      Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
+    if (!requiredCommand) {
+      Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
+      console.log(help.execute());
+      process.exit(ERROR_CODE);
     }
 
-    process.exit(SUCCESS_CODE);
+    if (requiredCommand.name !== `server`) {
+      Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
+      process.exit(SUCCESS_CODE);
+    }
+
+    const port = inputCommands[1];
+
+    Program.startServer(port, requiredCommand);
   }
 
   static getGreetingMessage() {
@@ -57,6 +64,29 @@ class Program {
       return require(`./src/commands/${moduleName}`);
     } catch (error) {
       return void 0;
+    }
+  }
+
+  static startServer(port, serverInstance) {
+    const portNumber = Number(port);
+    switch (true) {
+      case !port:
+        serverInstance.execute();
+        break;
+      case !Number.isInteger(portNumber):
+        console.log(`Port number should be integer`);
+        process.exit(ERROR_CODE);
+        break;
+      case portNumber === 0:
+        console.log(`Port 0 is reserved. It should not be used in TCP or UDP messages.`);
+        process.exit(ERROR_CODE);
+        break;
+      case portNumber > 65535:
+        console.log(`Port number should be less than or equal 65535.`);
+        process.exit(ERROR_CODE);
+        break;
+      default:
+        serverInstance.execute(port);
     }
   }
 }
