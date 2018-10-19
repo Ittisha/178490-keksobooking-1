@@ -2,7 +2,9 @@ const colors = require(`colors`);
 const {SUCCESS_CODE,
   ERROR_CODE, PROGRAM_TITLE,
   COMMAND_PREFIX_LENGH,
-  PATH_ARGS_LENGTH} = require(`./src/utils/util-constants`);
+  PATH_ARGS_LENGTH,
+  MAX_PORT,
+  RESERVED_PORT} = require(`./src/utils/util-constants`);
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
 const {parseInitialInput} = require(`./src/input-parser`);
@@ -77,11 +79,11 @@ class Program {
         console.log(`Port number should be integer`);
         process.exit(ERROR_CODE);
         break;
-      case portNumber === 0:
+      case portNumber === RESERVED_PORT:
         console.log(`Port 0 is reserved. It should not be used in TCP or UDP messages.`);
         process.exit(ERROR_CODE);
         break;
-      case portNumber > 65535:
+      case portNumber > MAX_PORT:
         console.log(`Port number should be less than or equal 65535.`);
         process.exit(ERROR_CODE);
         break;
