@@ -33,6 +33,7 @@ module.exports = class LocalServer {
   }
 
   setup() {
+    this.app.disable(`x-powered-by`);
     this.app.use(express.static(STATIC_DIR));
     this.app.use(`/api/offers`, offersRoute);
     this.app.use(NOT_FOUND_HANDLER);
