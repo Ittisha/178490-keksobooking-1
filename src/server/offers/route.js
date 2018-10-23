@@ -1,9 +1,13 @@
-const {Router} = require(`express`);
+const express = require(`express`);
 const IllegalArgumentError = require(`../errors/illegal-argument-error`);
 const NotFoundError = require(`../errors/not-found-error`);
 const {OFFERS_LIMIT, OFFERS_SKIP} = require(`../server-settings`);
 const offers = require(`./offers`);
-const offersRouter = new Router();
+const multer = require(`multer`);
+
+const offersRouter = new express.Router();
+const jsonParser = express.json();
+const upload = multer({storage: multer.memoryStorage()});
 
 const getOffersHandler = (req, res) => {
   const {limit = OFFERS_LIMIT, skip = OFFERS_SKIP} = req.query;
@@ -38,7 +42,19 @@ const getDateOfferHandler = (req, res) => {
   res.send(offerToSend);
 };
 
+const postOfferHandler = (req, res) => {
+  const body = req.body;
+  const avatar = req.file;
+
+  if (avatar) {
+    body.avatar = {name: avatar.originalname};
+  }
+
+  res.send(body);
+};
+
 offersRouter.get(``, getOffersHandler);
 offersRouter.get(`/:date`, getDateOfferHandler);
+offersRouter.post(``, jsonParser, upload.single(`avatar`), postOfferHandler);
 
 module.exports = offersRouter;
