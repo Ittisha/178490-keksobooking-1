@@ -3,7 +3,7 @@ const {getRandomString,
   getRandomArrayItem,
   getUniqueArray,
   shuffleArray,
-  getDate} = require(`./util-functions`);
+  getDate} = require(`../../src/utils/util-functions`);
 
 const {OFFER_TITLES,
   BUNGALO_TYPES,
@@ -16,7 +16,7 @@ const {OFFER_TITLES,
   CoordinateX,
   CoordinateY,
   TIME_INTERVAL,
-  URL_HOST} = require(`./util-constants`);
+  URL_HOST} = require(`../../src/utils/util-constants`);
 
 const generateEntity = () => {
   const locationX = getRandomInteger(CoordinateX.MIN, CoordinateX.MAX);

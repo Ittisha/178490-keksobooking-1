@@ -1,6 +1,11 @@
 const request = require(`supertest`);
 const assert = require(`assert`);
-const LocalServer = require(`../src/server/local-server`);
+const express = require(`express`);
+
+const offersStoreMock = require(`./mock/offers-store-mock`);
+const imagesStoreMock = require(`./mock/images-store-mock`);
+const offersRoute = require(`../src/server/offers/route`)(offersStoreMock, imagesStoreMock);
+
 const {StatusCodes,
   ValidateErrorMessage,
   Price,
@@ -21,9 +26,11 @@ const VALID_POST_OFFER = {
   features: [`elevator`, `conditioner`]
 };
 
-const localServer = new LocalServer();
-localServer.setup();
-const app = localServer.app;
+const app = express();
+app.use(`/api/offers`, offersRoute);
+app.use((req, res) => {
+  res.status(StatusCodes.NOT_FOUND).send(`Page was not found`);
+});
 
 describe(`POST /api/offers`, () => {
   describe(`POST valid offer`, () => {

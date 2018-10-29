@@ -1,5 +1,5 @@
 const assert = require(`assert`);
-const generateEntity = require(`../src/utils/generate-entity`);
+const generateEntity = require(`./generate/generate-entity`);
 const {EXPECTED_OFFER_PROPERTIES,
   OFFER_TITLES,
   BUNGALO_TYPES,

@@ -10,12 +10,12 @@ const STATIC_DIR = path.join(process.cwd(), `static`);
 const NOT_FOUND_HANDLER = (req, res) => {
   res.status(StatusCodes.NOT_FOUND).send(`Page was not found`);
 };
-const ERROR_HANDLER = (err, req, res, _next) => {
-  if (err) {
-    console.error(err);
-    res.status(err.code || StatusCodes.INTERNAL_SERVER_ERROR).send(err.message);
-  }
-};
+// const ERROR_HANDLER = (err, req, res, _next) => {
+//   if (err) {
+//     console.error(err);
+//     res.status(err.code || StatusCodes.INTERNAL_SERVER_ERROR).send(err.message);
+//   }
+// };
 
 module.exports = class LocalServer {
   constructor(port = SERVER_PORT) {
@@ -37,6 +37,6 @@ module.exports = class LocalServer {
     this.app.use(express.static(STATIC_DIR));
     this.app.use(`/api/offers`, offersRoute);
     this.app.use(NOT_FOUND_HANDLER);
-    this.app.use(ERROR_HANDLER);
+    // this.app.use(ERROR_HANDLER);
   }
 };

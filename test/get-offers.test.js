@@ -1,12 +1,19 @@
 const request = require(`supertest`);
 const assert = require(`assert`);
-const LocalServer = require(`../src/server/local-server`);
-const offers = require(`./../src/server/offers/offers`);
-const {OFFERS_SKIP, OFFERS_LIMIT, StatusCodes} = require(`./../src/server/server-settings`);
+const express = require(`express`);
 
-const localServer = new LocalServer();
-localServer.setup();
-const app = localServer.app;
+const offersStoreMock = require(`./mock/offers-store-mock`);
+const imagesStoreMock = require(`./mock/images-store-mock`);
+const offersRoute = require(`../src/server/offers/route`)(offersStoreMock, imagesStoreMock);
+const offers = require(`./generate/offers`);
+const {OFFERS_LIMIT, StatusCodes} = require(`./../src/server/server-settings`);
+
+
+const app = express();
+app.use(`/api/offers`, offersRoute);
+app.use((req, res) => {
+  res.status(StatusCodes.NOT_FOUND).send(`Page was not found`);
+});
 
 describe(`GET /api/offers`, () => {
   it(`get all ${OFFERS_LIMIT} offers and additional propeties`, async () => {
@@ -18,12 +25,7 @@ describe(`GET /api/offers`, () => {
 
     const requestedData = response.body;
 
-    assert.deepStrictEqual(requestedData, {
-      data: offers.slice(0, OFFERS_LIMIT),
-      total: OFFERS_LIMIT,
-      skip: OFFERS_SKIP,
-      limit: OFFERS_LIMIT
-    });
+    assert.strictEqual(requestedData.total, offers.length);
   });
 
   it(`get all offers with / at the end`, async () => {
@@ -35,12 +37,7 @@ describe(`GET /api/offers`, () => {
 
     const requestedData = response.body;
 
-    assert.deepStrictEqual(requestedData, {
-      data: offers.slice(0, OFFERS_LIMIT),
-      total: OFFERS_LIMIT,
-      skip: OFFERS_SKIP,
-      limit: OFFERS_LIMIT
-    });
+    assert.strictEqual(requestedData.total, offers.length);
   });
 
   it(`get data from unknown resource`, async () => {
@@ -62,7 +59,6 @@ describe(`GET /api/offers`, () => {
 
     const requestedData = response.body;
     assert.strictEqual(requestedData.data.length, LIMIT_PARAM);
-    assert.strictEqual(requestedData.total, LIMIT_PARAM);
     assert.strictEqual(requestedData.data[LIMIT_PARAM - 1].date, offers[LIMIT_PARAM - 1].date);
   });
 
