@@ -1,7 +1,10 @@
 const express = require(`express`);
+
 const IllegalArgumentError = require(`../errors/illegal-argument-error`);
 const NotFoundError = require(`../errors/not-found-error`);
 const ValidationError = require(`../errors/validation-error`);
+const MongoError = require(`mongodb`).MongoError;
+
 const {OFFERS_LIMIT,
   OFFERS_SKIP,
   NAMES,
@@ -58,6 +61,38 @@ offersRouter.get(`/:date`, asyncMiddleware(async (req, res) => {
   res.send(offerToSend);
 }));
 
+offersRouter.get(`/:date/avatar`, asyncMiddleware(async (req, res) => {
+  const date = Number(req.params.date);
+
+  if (!date) {
+    throw new IllegalArgumentError(`Request doesn't contain the date`);
+  }
+
+  const foundOffer = await offersRouter.offersStore.getOffer(date);
+
+  if (!foundOffer) {
+    throw new NotFoundError(`Offer with the ${date} date can't be found`);
+  }
+
+  const result = await offersRouter.imagesStore.get(foundOffer._id);
+
+  if (!result) {
+    throw new NotFoundError(`Avatar with date "${date}" can't be found`);
+  }
+
+  res.header(`Content-Type`, `image/jpg`);
+  res.header(`Content-Length`, result.info.length);
+  res.on(`error`, (err) => console.error(err));
+  res.on(`end`, () => res.end());
+
+  const stream = result.stream;
+  stream.on(`error`, (err) => console.error(err));
+  stream.on(`end`, () => res.end());
+  stream.pipe(res);
+
+
+}));
+
 offersRouter.post(``, jsonParser, upload, asyncMiddleware(async (req, res) => {
   const body = req.body;
   const files = req.files;
@@ -106,6 +141,9 @@ offersRouter.post(``, jsonParser, upload, asyncMiddleware(async (req, res) => {
 offersRouter.use((err, req, res, _next) => {
   if (err instanceof ValidationError) {
     res.status(err.code).json(err.errors);
+    return;
+  } else if (err instanceof MongoError) {
+    res.status(StatusCodes.BAD_REQUEST).json(err.message);
     return;
   }
   res.status(err.code || StatusCodes.INTERNAL_SERVER_ERROR).send(err.message);
