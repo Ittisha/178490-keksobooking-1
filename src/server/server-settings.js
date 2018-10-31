@@ -54,3 +54,16 @@ module.exports.ValidateErrorMessage = {
   FEATURES: `should be one of the following types: ${OFFER_FEATURES.join(`, `)}`,
   IMAGES: `should be an image type: image/jpg, image/png ...`
 };
+
+module.exports.FormFields = {
+  rooms: `rooms`,
+  title: `title`,
+  type: `type`,
+  price: `price`,
+  address: `address`,
+  checkin: `checkin`,
+  checkout: `chekout`,
+  features: `features`,
+  avatar: `avatar`,
+  preview: `preview`
+};

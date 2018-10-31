@@ -6,7 +6,8 @@ const {ValidateErrorMessage,
   MAX_ADDRESS_LENGTH,
   CHECK_IN_OUT_REGEXP,
   RoomsQuantity,
-  OFFER_FEATURES} = require(`../server-settings`);
+  OFFER_FEATURES,
+  FormFields} = require(`../server-settings`);
 
 const createErrorMessage = (field, message = ValidateErrorMessage.REQUIRED) => ({
   error: `Validation Error`,
@@ -47,11 +48,11 @@ const validate = (data) => {
 
   const validateRoomsField = () => {
     if (rooms === undefined) {
-      errors.push(createErrorMessage(`rooms`));
+      errors.push(createErrorMessage(FormFields.rooms));
       return;
     }
     if (!isRoomsFieldValid(rooms)) {
-      errors.push(createErrorMessage(`rooms`, ValidateErrorMessage.ROOMS));
+      errors.push(createErrorMessage(FormFields.rooms, ValidateErrorMessage.ROOMS));
     }
   };
 
@@ -66,33 +67,34 @@ const validate = (data) => {
     avatar,
     preview} = data;
 
-  validateRequiredField(title, `title`, ValidateErrorMessage.TITLE, isTitleValid);
+  validateRequiredField(title, FormFields.title, ValidateErrorMessage.TITLE, isTitleValid);
 
-  validateRequiredField(type, `type`, ValidateErrorMessage.TYPE, isTypeValid);
+  validateRequiredField(type, FormFields.type, ValidateErrorMessage.TYPE, isTypeValid);
 
-  validateRequiredField(price, `price`, ValidateErrorMessage.PRICE, isPriceValid);
+  validateRequiredField(price, FormFields.price, ValidateErrorMessage.PRICE, isPriceValid);
 
-  validateRequiredField(address, `address`, ValidateErrorMessage.ADDRESS, isAddressValid);
+  validateRequiredField(address, FormFields.address, ValidateErrorMessage.ADDRESS, isAddressValid);
 
-  validateRequiredField(checkin, `checkin`, ValidateErrorMessage.CHECKIN, isCheckValid);
+  validateRequiredField(checkin, FormFields.checkin, ValidateErrorMessage.CHECKIN, isCheckValid);
 
-  validateRequiredField(checkout, `checkout`, ValidateErrorMessage.CHECKOUT, isCheckValid);
+  validateRequiredField(checkout, FormFields.checkout, ValidateErrorMessage.CHECKOUT, isCheckValid);
 
   validateRoomsField();
 
   if (!isFeatureFieldValid(features, OFFER_FEATURES)) {
-    errors.push(createErrorMessage(`features`, ValidateErrorMessage.FEATURES));
+    errors.push(createErrorMessage(FormFields.features, ValidateErrorMessage.FEATURES));
   }
 
   if (avatar && !avatar.mimetype.match(/^image\//)) {
-    errors.push(createErrorMessage(`avatar`, ValidateErrorMessage.IMAGES));
+    errors.push(createErrorMessage(FormFields.avatar, ValidateErrorMessage.IMAGES));
   }
 
   if (preview && !preview.mimetype.match(/^image\//)) {
-    errors.push(createErrorMessage(`preview`, ValidateErrorMessage.IMAGES));
+    errors.push(createErrorMessage(FormFields.preview, ValidateErrorMessage.IMAGES));
   }
 
   if (errors.length > 0) {
+    console.log(errors);
     throw new ValidationError(errors);
   }
 

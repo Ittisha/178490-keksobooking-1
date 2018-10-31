@@ -1,56 +1,99 @@
 const express = require(`express`);
+
 const IllegalArgumentError = require(`../errors/illegal-argument-error`);
 const NotFoundError = require(`../errors/not-found-error`);
 const ValidationError = require(`../errors/validation-error`);
+const MongoError = require(`mongodb`).MongoError;
+
 const {OFFERS_LIMIT,
   OFFERS_SKIP,
-  NAMES} = require(`../server-settings`);
+  NAMES,
+  StatusCodes} = require(`../server-settings`);
 const {getRandomArrayItem} = require(`../../utils/util-functions`);
-const offers = require(`./offers`);
 const multer = require(`multer`);
 const validate = require(`./validate`);
 
 const offersRouter = new express.Router();
 const jsonParser = express.json();
+const toStream = require(`buffer-to-stream`);
 const upload = multer({storage: multer.memoryStorage()}).fields([
   {name: `avatar`, maxCount: 1},
   {name: `preview`, maxCount: 1}
 ]);
 
-const getOffersHandler = (req, res) => {
+const asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+
+const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
+  const packet = await cursor.skip(skip).limit(limit).toArray();
+  return {
+    data: packet,
+    skip,
+    limit,
+    total: await cursor.count()
+  };
+};
+
+offersRouter.get(``, asyncMiddleware(async (req, res) => {
   const {limit = OFFERS_LIMIT, skip = OFFERS_SKIP} = req.query;
   const limitNumber = Number(limit);
   const skipNumber = Number(skip);
 
-  const offersToSend = offers.slice(skipNumber, limitNumber + skipNumber);
+  if (isNaN(skipNumber) || isNaN(limitNumber)) {
+    throw new IllegalArgumentError(`Wrong request parameters "skip" or "limit"`);
+  }
 
-  const response = {
-    data: offersToSend,
-    skip,
-    limit,
-    total: offersToSend.length
-  };
+  res.send(await toPage(await offersRouter.offersStore.getAllOffers(), skip, limit));
+}));
 
-  res.send(response);
-};
-
-const getDateOfferHandler = (req, res) => {
+offersRouter.get(`/:date`, asyncMiddleware(async (req, res) => {
   const date = Number(req.params.date);
 
   if (!date) {
     throw new IllegalArgumentError(`Request doesn't contain the date`);
   }
 
-  const offerToSend = offers.find((item) => item.date === date);
+  const offerToSend = await offersRouter.offersStore.getOffer(date);
 
   if (!offerToSend) {
     throw new NotFoundError(`Offer with the ${date} date can't be found`);
   }
 
   res.send(offerToSend);
-};
+}));
 
-const postOfferHandler = (req, res) => {
+offersRouter.get(`/:date/avatar`, asyncMiddleware(async (req, res) => {
+  const date = Number(req.params.date);
+
+  if (!date) {
+    throw new IllegalArgumentError(`Request doesn't contain the date`);
+  }
+
+  const foundOffer = await offersRouter.offersStore.getOffer(date);
+
+  if (!foundOffer) {
+    throw new NotFoundError(`Offer with the ${date} date can't be found`);
+  }
+
+  const result = await offersRouter.imagesStore.get(foundOffer._id);
+
+  if (!result) {
+    throw new NotFoundError(`Avatar with date "${date}" can't be found`);
+  }
+
+  res.header(`Content-Type`, `image/jpg`);
+  res.header(`Content-Length`, result.info.length);
+  res.on(`error`, (err) => console.error(err));
+  res.on(`end`, () => res.end());
+
+  const stream = result.stream;
+  stream.on(`error`, (err) => console.error(err));
+  stream.on(`end`, () => res.end());
+  stream.pipe(res);
+
+
+}));
+
+offersRouter.post(``, jsonParser, upload, asyncMiddleware(async (req, res) => {
   const body = req.body;
   const files = req.files;
   let avatar;
@@ -79,18 +122,35 @@ const postOfferHandler = (req, res) => {
     };
   }
 
-  res.send(validate(body));
-};
+  const validatedOffer = validate(body);
+  const result = await offersRouter.offersStore.save(validatedOffer);
+  const {insertedId} = result;
 
-offersRouter.get(``, getOffersHandler);
-offersRouter.get(`/:date`, getDateOfferHandler);
-offersRouter.post(``, jsonParser, upload, postOfferHandler);
+  if (avatar) {
+    await offersRouter.imagesStore.save(insertedId, toStream(avatar.buffer));
+  }
+
+  if (preview) {
+    await offersRouter.imagesStore.save(insertedId, toStream(preview.buffer));
+  }
+
+  res.send(validate(body));
+}));
+
+
 offersRouter.use((err, req, res, _next) => {
   if (err instanceof ValidationError) {
     res.status(err.code).json(err.errors);
-  } else {
-    _next(err);
+    return;
+  } else if (err instanceof MongoError) {
+    res.status(StatusCodes.BAD_REQUEST).json(err.message);
+    return;
   }
+  res.status(err.code || StatusCodes.INTERNAL_SERVER_ERROR).send(err.message);
 });
 
-module.exports = offersRouter;
+module.exports = (offersStore, imagesStore) => {
+  offersRouter.offersStore = offersStore;
+  offersRouter.imagesStore = imagesStore;
+  return offersRouter;
+};
