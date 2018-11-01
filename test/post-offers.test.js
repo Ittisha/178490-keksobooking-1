@@ -4,7 +4,7 @@ const express = require(`express`);
 
 const offersStoreMock = require(`./mock/offers-store-mock`);
 const imagesStoreMock = require(`./mock/images-store-mock`);
-const offersRoute = require(`../src/server/offers/route`)(offersStoreMock, imagesStoreMock);
+const offersRoute = require(`../src/server/routes/router`)(offersStoreMock, imagesStoreMock);
 
 const {StatusCodes,
   ValidateErrorMessage,

@@ -1,6 +1,8 @@
 const {RANDOM_STRING_RADIX,
   BEGIN_SLICE_INDEX} = require(`./util-constants`);
 
+module.exports.asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(next);
+
 module.exports.getDate = (timeInterval) => {
   const dateNow = Date.now();
 

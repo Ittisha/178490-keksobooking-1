@@ -1,7 +1,7 @@
 const express = require(`express`);
-const imagesStore = require(`./offers/images-store`);
-const offersStore = require(`./offers/store`);
-const offersRouter = require(`./offers/route`)(offersStore, imagesStore);
+const imagesStore = require(`./store/images-store`);
+const offersStore = require(`./store/store`);
+const offersRouter = require(`./routes/router`)(offersStore, imagesStore);
 const path = require(`path`);
 
 const {DEFAULT_SERVER_HOST,
