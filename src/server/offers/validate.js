@@ -94,7 +94,6 @@ const validate = (data) => {
   }
 
   if (errors.length > 0) {
-    console.log(errors);
     throw new ValidationError(errors);
   }
 

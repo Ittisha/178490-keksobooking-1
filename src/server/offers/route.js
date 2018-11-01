@@ -26,11 +26,46 @@ const asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(nex
 const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
   const packet = await cursor.skip(skip).limit(limit).toArray();
   return {
-    data: packet,
+    data: packet.map((entity) => Object.assign({}, entity, {_id: void 0})),
     skip,
     limit,
     total: await cursor.count()
   };
+};
+
+const prepareForSaving = (receivedOffer) => {
+  const [x, y] = receivedOffer.address.split(`,`);
+  const date = Math.floor(Date.now());
+
+  const offerToSave = {
+    author: {
+      name: receivedOffer.name,
+    },
+    offer: {
+      title: receivedOffer.title,
+      description: receivedOffer.description,
+      address: receivedOffer.address,
+      price: receivedOffer.price,
+      type: receivedOffer.type,
+      rooms: receivedOffer.rooms,
+      guests: receivedOffer.guests,
+      checkin: receivedOffer.checkin,
+      chekout: receivedOffer.chekout,
+      features: receivedOffer.features,
+      photos: []
+    },
+    location: {
+      x: Number(x.trim()),
+      y: Number(y.trim())
+    },
+    date
+  };
+
+  if (receivedOffer.avatar) {
+    offerToSave.author.avatar = `api/offers/${date}/avatar`;
+  }
+
+  return offerToSave;
 };
 
 offersRouter.get(``, asyncMiddleware(async (req, res) => {
@@ -42,7 +77,7 @@ offersRouter.get(``, asyncMiddleware(async (req, res) => {
     throw new IllegalArgumentError(`Wrong request parameters "skip" or "limit"`);
   }
 
-  res.send(await toPage(await offersRouter.offersStore.getAllOffers(), skip, limit));
+  res.send(await toPage(await offersRouter.offersStore.getAllOffers(), skipNumber, limitNumber));
 }));
 
 offersRouter.get(`/:date`, asyncMiddleware(async (req, res) => {
@@ -58,7 +93,7 @@ offersRouter.get(`/:date`, asyncMiddleware(async (req, res) => {
     throw new NotFoundError(`Offer with the ${date} date can't be found`);
   }
 
-  res.send(offerToSend);
+  res.send(Object.assign({}, offerToSend, {_id: void 0}));
 }));
 
 offersRouter.get(`/:date/avatar`, asyncMiddleware(async (req, res) => {
@@ -123,7 +158,9 @@ offersRouter.post(``, jsonParser, upload, asyncMiddleware(async (req, res) => {
   }
 
   const validatedOffer = validate(body);
-  const result = await offersRouter.offersStore.save(validatedOffer);
+  const offerToSave = prepareForSaving(validatedOffer);
+
+  const result = await offersRouter.offersStore.save(offerToSave);
   const {insertedId} = result;
 
   if (avatar) {
@@ -134,7 +171,10 @@ offersRouter.post(``, jsonParser, upload, asyncMiddleware(async (req, res) => {
     await offersRouter.imagesStore.save(insertedId, toStream(preview.buffer));
   }
 
-  res.send(validate(body));
+  const offerToSend = validatedOffer;
+  validatedOffer.location = offerToSave.location;
+
+  res.send(offerToSend);
 }));
 
 
