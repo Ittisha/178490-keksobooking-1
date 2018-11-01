@@ -1,5 +1,6 @@
-const LocalServer = require(`../server/local-server`);
 const AbstractCommand = require(`./abstract-command`);
+const LocalServer = require(`../server/local-server`);
+
 const colors = require(`colors`);
 
 class Server extends AbstractCommand {

@@ -18,7 +18,7 @@ class OffersStore {
   }
 
   async getAllOffers() {
-    return (await this.collection).find();
+    return (await this.collection).find({}, {projection: {_id: void 0}});
   }
 
   async save(offerData) {
@@ -26,4 +26,5 @@ class OffersStore {
   }
 }
 
-module.exports = new OffersStore(setupCollection().catch((err) => console.error(`Failed to set up "offers"-collection`, err)));
+module.exports = new OffersStore(setupCollection().catch((err) =>
+  console.error(`Failed to set up "offers"-collection`, err)));

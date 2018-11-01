@@ -1,8 +1,11 @@
-const readline = require(`readline`);
-const {SUCCESS_CODE, ERROR_CODE, UsersBooleanAnswers} = require(`./utils/util-constants`);
 const fs = require(`fs`);
+const readline = require(`readline`);
 const {promisify} = require(`util`);
+
 const generateEntity = require(`../test/generate/generate-entity`);
+const {SUCCESS_CODE,
+  ERROR_CODE,
+  UsersBooleanAnswers} = require(`./utils/util-constants`);
 
 const rl = readline.createInterface({
   input: process.stdin,

@@ -1,13 +1,18 @@
+require(`dotenv`).config();
+
 const colors = require(`colors`);
-const {SUCCESS_CODE,
-  ERROR_CODE, PROGRAM_TITLE,
-  COMMAND_PREFIX_LENGH,
-  PATH_ARGS_LENGTH,
-  MAX_PORT,
-  RESERVED_PORT} = require(`./src/utils/util-constants`);
+
 const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
 const {parseInitialInput} = require(`./src/input-parser`);
+
+const {ERROR_CODE,
+  MAX_PORT,
+  COMMAND_PREFIX_LENGH,
+  RESERVED_PORT,
+  SUCCESS_CODE,
+  PATH_ARGS_LENGTH,
+  PROGRAM_TITLE} = require(`./src/utils/util-constants`);
 
 const inputArguments = process.argv.slice(PATH_ARGS_LENGTH);
 

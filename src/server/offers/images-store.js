@@ -31,14 +31,13 @@ class ImageStore {
   }
 
   async save(filename, stream) {
-    const bucket = await this.getBucket();
+    const bucket = await this._getBucket();
     return new Promise((success, fail) => {
       stream.pipe(bucket.openUploadStream(filename))
         .on(`error`, fail)
         .on(`finish`, success);
     });
   }
-
 }
 
 module.exports = new ImageStore();

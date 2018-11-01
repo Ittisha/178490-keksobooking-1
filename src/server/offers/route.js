@@ -26,7 +26,7 @@ const asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(nex
 const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
   const packet = await cursor.skip(skip).limit(limit).toArray();
   return {
-    data: packet.map((entity) => Object.assign({}, entity, {_id: void 0})),
+    data: packet,
     skip,
     limit,
     total: await cursor.count()

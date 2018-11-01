@@ -1,7 +1,11 @@
-const colors = require(`colors`);
 const AbstractCommand = require(`./abstract-command`);
+
+const colors = require(`colors`);
 const packageInfo = require(`../../package.json`);
-const {MAJOR_RELEASES_INDEX, MINOR_RELEASES_INDEX, PATCH_RELEASES_INDEX} = require(`../utils/util-constants`);
+
+const {MAJOR_RELEASES_INDEX,
+  MINOR_RELEASES_INDEX,
+  PATCH_RELEASES_INDEX} = require(`../utils/util-constants`);
 
 class Version extends AbstractCommand {
   execute() {
