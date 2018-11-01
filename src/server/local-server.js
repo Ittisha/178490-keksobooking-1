@@ -4,6 +4,8 @@ const offersStore = require(`./store/store`);
 const offersRouter = require(`./routes/router`)(offersStore, imagesStore);
 const path = require(`path`);
 
+const logger = require(`./logger`);
+
 const {DEFAULT_SERVER_HOST,
   DEFAULT_SERVER_PORT,
   ERROR_ADDRESS_IN_USE,
@@ -31,7 +33,7 @@ module.exports = class LocalServer {
     this._setup();
 
     this._app.listen(this._port, this._host, () => {
-      console.log(`Local server is running at http://${this._host}:${this._port}`);
+      logger.info(`Local server is running at http://${this._host}:${this._port}`);
     }).on(`error`, this._serverInUseErrorHandler);
   }
 
@@ -44,7 +46,7 @@ module.exports = class LocalServer {
 
   _serverInUseErrorHandler(err) {
     if (err.code === ERROR_ADDRESS_IN_USE) {
-      console.log(`Port ${err.port} is in use`);
+      logger.error(`Port ${err.port} is in use`);
       process.exit(ERROR_CODE);
     }
   }

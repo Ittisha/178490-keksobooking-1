@@ -81,15 +81,15 @@ class Program {
         serverInstance.execute();
         break;
       case !Number.isInteger(portNumber):
-        console.log(`Port number should be integer`);
+        console.error(`Port number should be integer`);
         process.exit(ERROR_CODE);
         break;
       case portNumber === RESERVED_PORT:
-        console.log(`Port 0 is reserved. It should not be used in TCP or UDP messages.`);
+        console.error(`Port 0 is reserved. It should not be used in TCP or UDP messages.`);
         process.exit(ERROR_CODE);
         break;
       case portNumber > MAX_PORT:
-        console.log(`Port number should be less than or equal 65535.`);
+        console.error(`Port number should be less than or equal 65535.`);
         process.exit(ERROR_CODE);
         break;
       default:

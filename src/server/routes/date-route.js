@@ -1,5 +1,6 @@
 const {asyncMiddleware} = require(`../../utils/util-functions`);
 const IllegalArgumentError = require(`../errors/illegal-argument-error`);
+const logger = require(`../logger`);
 const NotFoundError = require(`../errors/not-found-error`);
 
 module.exports = (router) => {
@@ -40,11 +41,11 @@ module.exports = (router) => {
 
     res.header(`Content-Type`, `image/jpg`);
     res.header(`Content-Length`, result.info.length);
-    res.on(`error`, (err) => console.error(err));
+    res.on(`error`, (err) => logger.error(err));
     res.on(`end`, () => res.end());
 
     const stream = result.stream;
-    stream.on(`error`, (err) => console.error(err));
+    stream.on(`error`, (err) => logger(err));
     stream.on(`end`, () => res.end());
     stream.pipe(res);
   }));
