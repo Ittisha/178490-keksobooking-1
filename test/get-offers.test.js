@@ -5,7 +5,7 @@ const express = require(`express`);
 const offersStoreMock = require(`./mock/offers-store-mock`);
 const imagesStoreMock = require(`./mock/images-store-mock`);
 const offersRoute = require(`../src/server/routes/router`)(offersStoreMock, imagesStoreMock);
-const offers = require(`./generate/offers`);
+const offers = require(`../src/generate/offers`);
 const {OFFERS_LIMIT, StatusCodes} = require(`./../src/server/server-settings`);
 
 
@@ -71,9 +71,10 @@ describe(`GET /api/offers`, () => {
     .expect(`Content-Type`, /json/);
 
     const requestedData = response.body;
+    const expectedData = offers.slice(SKIP_PARAM, SKIP_PARAM + OFFERS_LIMIT);
 
-    assert.deepStrictEqual(requestedData.data, offers.slice(SKIP_PARAM, SKIP_PARAM + OFFERS_LIMIT));
-    assert.strictEqual(requestedData.data.length, OFFERS_LIMIT);
+    assert.deepStrictEqual(requestedData.data, expectedData);
+    assert.strictEqual(requestedData.data.length, expectedData.length);
   });
 });
 

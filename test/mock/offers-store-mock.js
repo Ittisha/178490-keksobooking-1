@@ -1,5 +1,5 @@
 const Cursor = require(`./cursor-mock`);
-const offers = require(`../generate/offers`);
+const offers = require(`../../src/generate/offers`);
 
 const TEST_INSERTED_ID = 42;
 

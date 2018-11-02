@@ -33,20 +33,27 @@ class Program {
     const command = inputCommands[0];
     const requiredCommand = Program.getModule(command.slice(COMMAND_PREFIX_LENGH));
 
-    if (!requiredCommand) {
-      Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
-      console.log(help.execute());
-      process.exit(ERROR_CODE);
+    switch (true) {
+      case !requiredCommand:
+        Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
+        console.log(help.execute());
+        process.exit(ERROR_CODE);
+        break;
+
+      case requiredCommand.name === `fill`:
+        const entetiesNumber = inputCommands[1];
+        requiredCommand.execute(entetiesNumber);
+        break;
+
+      case requiredCommand.name !== `server`:
+        Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
+        process.exit(SUCCESS_CODE);
+        break;
+
+      default:
+        const port = inputCommands[1];
+        Program.startServer(port, requiredCommand);
     }
-
-    if (requiredCommand.name !== `server`) {
-      Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
-      process.exit(SUCCESS_CODE);
-    }
-
-    const port = inputCommands[1];
-
-    Program.startServer(port, requiredCommand);
   }
 
   static getGreetingMessage() {
@@ -80,18 +87,22 @@ class Program {
       case !port:
         serverInstance.execute();
         break;
+
       case !Number.isInteger(portNumber):
-        console.error(`Port number should be integer`);
+        console.error(`Port number should be an integer`);
         process.exit(ERROR_CODE);
         break;
+
       case portNumber === RESERVED_PORT:
         console.error(`Port 0 is reserved. It should not be used in TCP or UDP messages.`);
         process.exit(ERROR_CODE);
         break;
+
       case portNumber > MAX_PORT:
         console.error(`Port number should be less than or equal 65535.`);
         process.exit(ERROR_CODE);
         break;
+
       default:
         serverInstance.execute(port);
     }

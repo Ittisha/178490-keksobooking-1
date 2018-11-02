@@ -1,13 +1,15 @@
+const colors = require(`colors`);
+
 const AbsctractCommand = require(`./abstract-command`);
 
 const author = require(`./author`);
-const colors = require(`colors`);
 const description = require(`./description`);
+const fill = require(`./fill`);
 const license = require(`./license`);
 const server = require(`./server`);
 const version = require(`./version`);
 
-const commands = [version, license, author, description, server];
+const commands = [version, license, author, description, server, fill];
 
 const PREFIX = `--`;
 
