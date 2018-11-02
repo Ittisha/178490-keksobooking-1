@@ -64,7 +64,6 @@ const prepareForSaving = (receivedOffer) => {
   return offerToSave;
 };
 
-
 module.exports = (router) => {
   router.get(``, asyncMiddleware(async (req, res) => {
     const {limit = OFFERS_LIMIT, skip = OFFERS_SKIP} = req.query;
