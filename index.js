@@ -2,7 +2,6 @@ require(`dotenv`).config();
 
 const colors = require(`colors`);
 
-const {author: authorInfo} = require(`./package.json`);
 const help = require(`./src/commands/help`);
 const {parseInitialInput} = require(`./src/input-parser`);
 
