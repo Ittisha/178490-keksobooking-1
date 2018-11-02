@@ -3,16 +3,18 @@ module.exports.DEFAULT_SERVER_PORT = 3000;
 module.exports.DEFAULT_SERVER_HOST = `localhost`;
 module.exports.ERROR_ADDRESS_IN_USE = `EADDRINUSE`;
 module.exports.FormFields = {
-  rooms: `rooms`,
-  title: `title`,
-  type: `type`,
-  price: `price`,
   address: `address`,
+  author: `author`,
+  avatar: `avatar`,
   checkin: `checkin`,
   checkout: `chekout`,
   features: `features`,
-  avatar: `avatar`,
-  preview: `preview`
+  guests: `guests`,
+  rooms: `rooms`,
+  preview: `preview`,
+  price: `price`,
+  title: `title`,
+  type: `type`,
 };
 
 module.exports.ImplementedMethods = {

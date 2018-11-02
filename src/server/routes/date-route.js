@@ -1,5 +1,6 @@
 const {asyncMiddleware} = require(`../../utils/util-functions`);
 const IllegalArgumentError = require(`../errors/illegal-argument-error`);
+const {FormFields} = require(`../server-settings`);
 const logger = require(`../logger`);
 const NotFoundError = require(`../errors/not-found-error`);
 
@@ -7,19 +8,19 @@ const getOfferHtml = (offer) => {
   const author = offer.author.name ? offer.author.name : `Unknown`;
   const description = offer.description ? offer.description : ``;
 
-  const photo = offer.photo ? offer.photo.map((it) => `<img src="${it}">`) : ``;
+  const photo = offer.offer.photos ? offer.offer.photos.map((it) => `<img src="${it}" width="150">`) : ``;
 
   return `
 <article>
-  <p>${author}</p>
-  <img src="${offer.author.avatar}">
-  <p>${offer.offer.title}</p>
-  <p>${offer.offer.price}</p>
-  <p>${offer.offer.type}</p>
-  <p>${offer.offer.rooms}</p>
-  <p>${offer.offer.guests}</p>
-  <p>${offer.offer.checkin}</p>
-  <p>${offer.offer.chekout}</p>
+  <p>${FormFields.author} - ${author}</p>
+  <img src="${offer.author.avatar}" width="70">
+  <p>${FormFields.title} - ${offer.offer.title}</p>
+  <p>${FormFields.price} - ${offer.offer.price}</p>
+  <p>${FormFields.type} - ${offer.offer.type}</p>
+  <p>${FormFields.rooms} - ${offer.offer.rooms}</p>
+  <p>${FormFields.guests} - ${offer.offer.guests}</p>
+  <p>${FormFields.checkin} - ${offer.offer.checkin}</p>
+  <p>${FormFields.checkout} - ${offer.offer.checkout}</p>
   ${description}
   ${photo}
   <p>${new Date(offer.date).toLocaleString()}</p>
@@ -42,7 +43,19 @@ module.exports = (router) => {
     }
 
     if (doesAcceptHtml) {
-      res.send(getOfferHtml(offerToSend));
+      const htmlToSend = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>GET request data</title>
+  </head>
+  <body>
+    ${getOfferHtml(offerToSend)}
+  </body>
+</html>`;
+
+      res.send(htmlToSend);
       return;
     }
 
