@@ -29,7 +29,7 @@ class Program {
     }
   }
 
-  static executeCommand(inputCommands) {
+  static async executeCommand(inputCommands) {
     const command = inputCommands[0];
     const requiredCommand = Program.getModule(command.slice(COMMAND_PREFIX_LENGH));
 
@@ -42,7 +42,8 @@ class Program {
 
       case requiredCommand.name === `fill`:
         const entetiesNumber = inputCommands[1];
-        requiredCommand.execute(entetiesNumber);
+        await requiredCommand.execute(entetiesNumber);
+        process.exit(SUCCESS_CODE);
         break;
 
       case requiredCommand.name !== `server`:
@@ -57,7 +58,7 @@ class Program {
   }
 
   static getGreetingMessage() {
-    return `Hi user!\nThis program will start the server «${PROGRAM_TITLE}».\nAuthor: ${authorInfo}.`;
+    return `Hi user!\nThis program will start the server «${PROGRAM_TITLE}».\n`;
   }
 
   static getErrorMessage(command) {

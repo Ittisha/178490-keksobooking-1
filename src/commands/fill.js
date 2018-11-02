@@ -3,11 +3,10 @@ const AbstractCommand = require(`./abstract-command`);
 const generateEntity = require(`../generate/generate-entity`);
 const store = require(`../server/store/store`);
 
-const {ERROR_CODE,
-  SUCCESS_CODE} = require(`../utils/util-constants`);
+const {ERROR_CODE} = require(`../utils/util-constants`);
 
 class Fill extends AbstractCommand {
-  execute(quantity = 10) {
+  async execute(quantity = 10) {
     const offersNumber = Number(quantity);
 
     if (!offersNumber || !Number.isInteger(offersNumber)) {
@@ -20,10 +19,9 @@ class Fill extends AbstractCommand {
 
     console.log(`Connecting to database...`);
 
-    store.saveMany(offers)
+    await store.saveMany(offers)
     .then(() => {
       console.log(`Database was successfully filled with ${offersNumber} offers`);
-      process.exit(SUCCESS_CODE);
     })
     .catch((err) => {
       console.error(err);
