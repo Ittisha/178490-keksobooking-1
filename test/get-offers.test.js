@@ -93,12 +93,22 @@ describe(`GET /api/offers/:date`, () => {
     assert.strictEqual(requestedOffer.date, offer.date);
   });
 
-  it(`get offer with incorrect date`, async () => {
+  it(`get offer with incorrect date accepting "application/json"`, async () => {
     const NINE_DAYS = 1000 * 60 * 60 * 24 * 9;
 
     return await request(app)
     .get(`/api/offers/${Date.now() - NINE_DAYS}`)
     .set(`Accept`, `application/json`)
+    .expect(StatusCodes.NOT_FOUND)
+    .expect(`Content-Type`, /json/);
+  });
+
+  it(`get offer with incorrect date`, async () => {
+    const NINE_DAYS = 1000 * 60 * 60 * 24 * 9;
+
+    return await request(app)
+    .get(`/api/offers/${Date.now() - NINE_DAYS}`)
+    .set(`Accept`, `text/html`)
     .expect(StatusCodes.NOT_FOUND)
     .expect(`Content-Type`, /html/);
   });

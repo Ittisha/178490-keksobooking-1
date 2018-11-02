@@ -9,6 +9,7 @@ const logger = require(`./logger`);
 const {DEFAULT_SERVER_HOST,
   DEFAULT_SERVER_PORT,
   ERROR_ADDRESS_IN_USE,
+  ImplementedMethods,
   StatusCodes} = require(`./server-settings`);
 
 const {ERROR_CODE} = require(`../utils/util-constants`);
@@ -18,8 +19,17 @@ const {SERVER_PORT = DEFAULT_SERVER_PORT,
 
 const STATIC_DIR = path.join(process.cwd(), `static`);
 
-const NOT_FOUND_HANDLER = (req, res) => {
-  res.status(StatusCodes.NOT_FOUND).send(`Page was not found`);
+const NOT_FOUND_IMPLEMENTED_HANDLER = (req, res) => {
+  if ((req.method === ImplementedMethods.GET) || (req.method === ImplementedMethods.POST)) {
+    res.status(StatusCodes.NOT_FOUND).send(`Page was not found`);
+    return;
+  }
+  res.status(StatusCodes.NOT_IMPLEMENTED_ERROR).send(`${StatusCodes.NOT_IMPLEMENTED_ERROR} ${req.method} is not implemented`);
+};
+
+const INTERNAL_SERVER_ERROR_HANDLER = (err, req, res, _next) => {
+  logger.error(err.stack);
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(`<p>500 Internal Server Error</p><p>Sorry, something went wrong.</p>`);
 };
 
 module.exports = class LocalServer {
@@ -41,7 +51,8 @@ module.exports = class LocalServer {
     this._app.disable(`x-powered-by`);
     this._app.use(express.static(STATIC_DIR));
     this._app.use(`/api/offers`, offersRouter);
-    this._app.use(NOT_FOUND_HANDLER);
+    this._app.use(NOT_FOUND_IMPLEMENTED_HANDLER);
+    this._app.use(INTERNAL_SERVER_ERROR_HANDLER);
   }
 
   _serverInUseErrorHandler(err) {

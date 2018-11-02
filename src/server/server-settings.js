@@ -15,6 +15,10 @@ module.exports.FormFields = {
   preview: `preview`
 };
 
+module.exports.ImplementedMethods = {
+  GET: `GET`,
+  POST: `POST`
+};
 
 const MAX_ADDRESS_LENGTH = 100;
 module.exports.MAX_ADDRESS_LENGTH = MAX_ADDRESS_LENGTH;
