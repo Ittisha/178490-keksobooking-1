@@ -3,6 +3,8 @@ const multer = require(`multer`);
 const toStream = require(`buffer-to-stream`);
 
 const IllegalArgumentError = require(`../errors/illegal-argument-error`);
+const {getOfferHtml,
+  getPageTemplate} = require(`./get-html-templates`);
 const {getRandomArrayItem} = require(`../../utils/util-functions`);
 const {OFFERS_LIMIT,
   OFFERS_SKIP,
@@ -66,6 +68,8 @@ const prepareForSaving = (receivedOffer) => {
 
 module.exports = (router) => {
   router.get(``, asyncMiddleware(async (req, res) => {
+    const doesAcceptHtml = req.accepts([`json`, `html`]) === `html`;
+
     const {limit = OFFERS_LIMIT, skip = OFFERS_SKIP} = req.query;
     const limitNumber = Number(limit);
     const skipNumber = Number(skip);
@@ -74,7 +78,19 @@ module.exports = (router) => {
       throw new IllegalArgumentError(`Wrong request parameters "skip" or "limit"`);
     }
 
-    res.send(await toPage(await router.offersStore.getAllOffers(), skipNumber, limitNumber));
+    const offersToSend = await toPage(await router.offersStore.getAllOffers(), skipNumber, limitNumber);
+
+    if (doesAcceptHtml) {
+      const offersHtmlTemplates = offersToSend.data.map((offer) => getOfferHtml(offer));
+
+      const offersTemplate = offersHtmlTemplates.reduce((accumulator, currentTemplate) => (accumulator + currentTemplate + `\n`), ``);
+      const htmlToSend = getPageTemplate(offersTemplate);
+
+      res.send(htmlToSend);
+      return;
+    }
+
+    res.send(offersToSend);
   }));
 
 
