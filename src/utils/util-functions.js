@@ -3,18 +3,15 @@ const {RANDOM_STRING_RADIX,
 
 module.exports.asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).catch(next);
 
+module.exports.doesAcceptHtml = (req) => req.accepts([`json`, `html`]) === `html`;
+
 module.exports.getDate = (timeInterval) => {
   const dateNow = Date.now();
 
   return getRandomInteger(dateNow, dateNow - timeInterval);
 };
 
-/**
- * Returns random integer between min and max inclusive
- * @param {nunber} min
- * @param {number} max
- * @return {number}
- */
+// Returns random integer between min and max inclusive
 const getRandomInteger = (min, max) => Math.floor(Math.random() *
   (max + 1 - min) + min);
 module.exports.getRandomInteger = getRandomInteger;

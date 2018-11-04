@@ -3,6 +3,7 @@ const colors = require(`colors`);
 const AbsctractCommand = require(`./abstract-command`);
 
 const author = require(`./author`);
+const {Commands} = require(`../utils/util-constants`);
 const description = require(`./description`);
 const fill = require(`./fill`);
 const license = require(`./license`);
@@ -26,4 +27,4 @@ class Help extends AbsctractCommand {
   }
 }
 
-module.exports = new Help(`help`, `Shows available commands`);
+module.exports = new Help(Commands.help, `Shows available commands`);

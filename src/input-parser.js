@@ -2,6 +2,7 @@ const readline = require(`readline`);
 
 const fill = require(`./commands/fill`);
 const helpCommand = require(`./commands/help`);
+const logger = require(`./server/logger`);
 const server = require(`./commands/server`);
 const {SUCCESS_CODE,
   ERROR_CODE,
@@ -13,7 +14,7 @@ const rl = readline.createInterface({
 });
 
 rl.on(`error`, (err) => {
-  console.error(err);
+  logger.error(err);
   process.exit(ERROR_CODE);
 });
 
@@ -58,17 +59,17 @@ const getEntitiesQuantity = () => {
 
 module.exports.parseInitialInput = async () => {
   await repeatQuestion(shouldStart).catch((err) => {
-    console.error(err);
+    logger.error(err);
     process.exit(ERROR_CODE);
   });
 
   let entetiesQuantity = await repeatQuestion(getEntitiesQuantity).catch((err) => {
-    console.error(err);
+    logger.error(err);
     process.exit(ERROR_CODE);
   });
 
   await fill.execute(entetiesQuantity).catch((err) => {
-    console.error(err);
+    logger.error(err);
     process.exit(ERROR_CODE);
   });
 

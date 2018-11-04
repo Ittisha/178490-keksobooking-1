@@ -6,7 +6,8 @@ const path = require(`path`);
 
 const logger = require(`./logger`);
 
-const {DEFAULT_SERVER_HOST,
+const {DEFAULT_PATH,
+  DEFAULT_SERVER_HOST,
   DEFAULT_SERVER_PORT,
   ERROR_ADDRESS_IN_USE,
   ImplementedMethods,
@@ -50,7 +51,7 @@ module.exports = class LocalServer {
   _setup() {
     this._app.disable(`x-powered-by`);
     this._app.use(express.static(STATIC_DIR));
-    this._app.use(`/api/offers`, offersRouter);
+    this._app.use(DEFAULT_PATH, offersRouter);
     this._app.use(NOT_FOUND_IMPLEMENTED_HANDLER);
     this._app.use(INTERNAL_SERVER_ERROR_HANDLER);
   }

@@ -1,4 +1,5 @@
 module.exports.CHECK_IN_OUT_REGEXP = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+module.exports.DEFAULT_PATH = `/api/offers`;
 module.exports.DEFAULT_SERVER_PORT = 3000;
 module.exports.DEFAULT_SERVER_HOST = `localhost`;
 module.exports.ERROR_ADDRESS_IN_USE = `EADDRINUSE`;
@@ -25,12 +26,33 @@ module.exports.ImplementedMethods = {
 const MAX_ADDRESS_LENGTH = 100;
 module.exports.MAX_ADDRESS_LENGTH = MAX_ADDRESS_LENGTH;
 
-module.exports.NAMES = [`Keks`, `Pavel`, `Nikolay`, `Alex`, `Ulyana`, `Anastasyia`, `Julia`];
+module.exports.NAMES = [
+  `Keks`,
+  `Pavel`,
+  `Nikolay`,
+  `Alex`,
+  `Ulyana`,
+  `Anastasyia`,
+  `Julia`
+];
 
-const OFFER_FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
+const OFFER_FEATURES = [
+  `wifi`,
+  `dishwasher`,
+  `parking`,
+  `washer`,
+  `elevator`,
+  `conditioner`
+];
 module.exports.OFFER_FEATURES = OFFER_FEATURES;
 
-const OFFER_TYPES = [`flat`, `house`, `bungalo`, `palace`];
+const OFFER_TYPES = [
+  `flat`,
+  `house`,
+  `bungalo`,
+  `palace`
+];
+
 module.exports.OFFER_TYPES = OFFER_TYPES;
 
 module.exports.OFFERS_LIMIT = 20;

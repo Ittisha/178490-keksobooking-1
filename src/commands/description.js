@@ -1,4 +1,5 @@
 const AbstractCommand = require(`./abstract-command`);
+const {Commands} = require(`../utils/util-constants`);
 const packageInfo = require(`../../package.json`);
 
 class Description extends AbstractCommand {
@@ -7,4 +8,4 @@ class Description extends AbstractCommand {
   }
 }
 
-module.exports = new Description(`description`, `Shows program description`);
+module.exports = new Description(Commands.description, `Shows program description`);
