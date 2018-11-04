@@ -1,5 +1,6 @@
 const AbstractCommand = require(`./abstract-command`);
 
+const {Commands} = require(`../utils/util-constants`);
 const colors = require(`colors`);
 const packageInfo = require(`../../package.json`);
 
@@ -9,4 +10,4 @@ class License extends AbstractCommand {
   }
 }
 
-module.exports = new License(`license`, `Shows program license`);
+module.exports = new License(Commands.license, `Shows program license`);

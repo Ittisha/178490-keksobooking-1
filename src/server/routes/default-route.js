@@ -5,7 +5,9 @@ const toStream = require(`buffer-to-stream`);
 const IllegalArgumentError = require(`../errors/illegal-argument-error`);
 const {getOfferHtml,
   getPageTemplate} = require(`./get-html-templates`);
-const {getRandomArrayItem} = require(`../../utils/util-functions`);
+const {asyncMiddleware,
+  doesAcceptHtml,
+  getRandomArrayItem} = require(`../../utils/util-functions`);
 const {OFFERS_LIMIT,
   OFFERS_SKIP,
   NAMES} = require(`../server-settings`);
@@ -17,9 +19,6 @@ const upload = multer({storage: multer.memoryStorage()}).fields([
   {name: `avatar`, maxCount: 1},
   {name: `preview`, maxCount: 1}
 ]);
-
-
-const {asyncMiddleware} = require(`../../utils/util-functions`);
 
 const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
   const packet = await cursor.skip(skip).limit(limit).toArray();
@@ -68,8 +67,6 @@ const prepareForSaving = (receivedOffer) => {
 
 module.exports = (router) => {
   router.get(``, asyncMiddleware(async (req, res) => {
-    const doesAcceptHtml = req.accepts([`json`, `html`]) === `html`;
-
     const {limit = OFFERS_LIMIT, skip = OFFERS_SKIP} = req.query;
     const limitNumber = Number(limit);
     const skipNumber = Number(skip);
@@ -80,7 +77,7 @@ module.exports = (router) => {
 
     const offersToSend = await toPage(await router.offersStore.getAllOffers(), skipNumber, limitNumber);
 
-    if (doesAcceptHtml) {
+    if (doesAcceptHtml(req)) {
       const offersHtmlTemplates = offersToSend.data.map((offer) => getOfferHtml(offer));
 
       const offersTemplate = offersHtmlTemplates.reduce((accumulator, currentTemplate) => (accumulator + currentTemplate + `\n`), ``);

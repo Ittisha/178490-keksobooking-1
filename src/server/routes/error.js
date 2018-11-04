@@ -1,5 +1,6 @@
 const {StatusCodes} = require(`../server-settings`);
 const MongoError = require(`mongodb`).MongoError;
+const {doesAcceptHtml} = require(`../../utils/util-functions`);
 
 const getHtmlError = (err) => {
   let errorMessageTemplate = `<p>${err.message}</p>`;
@@ -37,8 +38,7 @@ module.exports = (router) => {
     }
 
     if (err) {
-      const acceptsHtml = req.accepts(`html`) === `html`;
-      const errorMessage = acceptsHtml ? getHtmlError(err) : getJsonError(err);
+      const errorMessage = doesAcceptHtml(req) ? getHtmlError(err) : getJsonError(err);
       res.status(err.code).send(errorMessage);
     }
   };

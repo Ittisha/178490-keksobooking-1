@@ -1,5 +1,6 @@
 const AbstractCommand = require(`./abstract-command`);
 
+const {Commands} = require(`../utils/util-constants`);
 const colors = require(`colors`);
 const packageInfo = require(`../../package.json`);
 
@@ -14,4 +15,4 @@ class Version extends AbstractCommand {
   }
 }
 
-module.exports = new Version(`version`, `Shows program version`);
+module.exports = new Version(Commands.version, `Shows program version`);

@@ -3,11 +3,13 @@ require(`dotenv`).config();
 const colors = require(`colors`);
 
 const help = require(`./src/commands/help`);
+const logger = require(`./src/server/logger`);
 const {parseInitialInput} = require(`./src/input-parser`);
 
 const {ERROR_CODE,
   MAX_PORT,
   COMMAND_PREFIX_LENGH,
+  Commands,
   RESERVED_PORT,
   SUCCESS_CODE,
   PATH_ARGS_LENGTH,
@@ -20,7 +22,7 @@ class Program {
     if (!inputCommands.length) {
       Program.printOutput(Program.getGreetingMessage(), SUCCESS_CODE);
       parseInitialInput().catch((err) => {
-        console.error(err);
+        logger.error(err);
         process.exit(ERROR_CODE);
       });
     } else {
@@ -39,13 +41,13 @@ class Program {
         process.exit(ERROR_CODE);
         break;
 
-      case requiredCommand.name === `fill`:
+      case requiredCommand.name === Commands.fill:
         const entetiesNumber = inputCommands[1];
         await requiredCommand.execute(entetiesNumber);
         process.exit(SUCCESS_CODE);
         break;
 
-      case requiredCommand.name !== `server`:
+      case requiredCommand.name !== Commands.server:
         Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
         process.exit(SUCCESS_CODE);
         break;

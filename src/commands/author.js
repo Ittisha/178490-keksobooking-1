@@ -1,4 +1,5 @@
 const AbstractCommand = require(`./abstract-command`);
+const {Commands} = require(`../utils/util-constants`);
 const packageInfo = require(`../../package.json`);
 
 class Author extends AbstractCommand {
@@ -7,4 +8,4 @@ class Author extends AbstractCommand {
   }
 }
 
-module.exports = new Author(`author`, `Shows program author`);
+module.exports = new Author(Commands.author, `Shows program author`);

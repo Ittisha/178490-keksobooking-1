@@ -17,47 +17,60 @@ const createErrorMessage = (field, message = ValidateErrorMessage.REQUIRED) => (
 
 const isAddressValid = (address) => typeof address === `string` && address.length <= MAX_ADDRESS_LENGTH;
 
-const isCheckValid = (time) => typeof time === `string` && !!time.match(CHECK_IN_OUT_REGEXP);
+const isCheckValid = (time) => typeof time === `string` &&
+ !!time.match(CHECK_IN_OUT_REGEXP);
 
 const isPriceValid = (price) => Number(price) && price >= Price.MIN && price <= Price.MAX;
 
 const isTitleValid = (title) =>
-  typeof title === `string` && title.length >= TitleLength.MIN && title.length <= TitleLength.MAX;
+  typeof title === `string` && title.length >= TitleLength.MIN &&
+   title.length <= TitleLength.MAX;
 
-const isTypeValid = (type) => typeof type === `string` && OFFER_TYPES.find((item) => item === type);
+const isTypeValid = (type) => typeof type === `string` &&
+ OFFER_TYPES.find((item) => item === type);
 
 // should make this additional check `|| rooms === RoomsQuantity.MIN` as min rooms number is 0, and Number(0) is read as false
 const isRoomsFieldValid = (rooms) => (Number(rooms) || Number(rooms) === RoomsQuantity.MIN) &&
 rooms >= RoomsQuantity.MIN && rooms <= RoomsQuantity.MAX;
 
-const isFeatureFieldValid = (incomingFeatures, featuresList) => {
-  return !incomingFeatures || (incomingFeatures.every((feature) =>
-    featuresList.includes(feature)) && !incomingFeatures.some((feature) =>
-    incomingFeatures.indexOf(feature) !== incomingFeatures.lastIndexOf(feature)));
+const isFeatureFieldValid = (features) => {
+  const incomingFeatures = Array.isArray(features) ? features : [features];
+  return incomingFeatures.every((feature) =>
+    OFFER_FEATURES.includes(feature)) && !incomingFeatures.some((feature) =>
+    incomingFeatures.indexOf(feature) !== incomingFeatures.lastIndexOf(feature));
+};
+
+const isImageValid = (image) => image.mimetype.match(/^image\//);
+
+const validateRequiredField = (field, fieldName, errorMessage, isValidField, errorsStore) => {
+  if (!field) {
+    return [...errorsStore, createErrorMessage(fieldName)];
+  }
+  if (!isValidField(field)) {
+    return [...errorsStore, createErrorMessage(fieldName, errorMessage)];
+  }
+  return errorsStore;
+};
+
+const validateOptionalField = (field, fieldName, errorMessage, isValidField, errorsStore) => {
+  if (field && !isValidField(field)) {
+    return [...errorsStore, createErrorMessage(fieldName, errorMessage)];
+  }
+  return errorsStore;
+};
+
+const validateRoomsField = (rooms, errorsStore) => {
+  if (rooms === undefined) {
+    return [...errorsStore, createErrorMessage(FormFields.rooms)];
+  }
+  if (!isRoomsFieldValid(rooms)) {
+    return [...errorsStore, createErrorMessage(FormFields.rooms, ValidateErrorMessage.ROOMS)];
+  }
+  return errorsStore;
 };
 
 const validate = (data) => {
-  const errors = [];
-
-  const validateRequiredField = (field, fieldName, errorMessage, isValidField) => {
-    if (!field) {
-      errors.push(createErrorMessage(fieldName));
-      return;
-    }
-    if (!isValidField(field)) {
-      errors.push(createErrorMessage(fieldName, errorMessage));
-    }
-  };
-
-  const validateRoomsField = () => {
-    if (rooms === undefined) {
-      errors.push(createErrorMessage(FormFields.rooms));
-      return;
-    }
-    if (!isRoomsFieldValid(rooms)) {
-      errors.push(createErrorMessage(FormFields.rooms, ValidateErrorMessage.ROOMS));
-    }
-  };
+  let errors = [];
 
   const {title,
     type,
@@ -70,31 +83,25 @@ const validate = (data) => {
     avatar,
     preview} = data;
 
-  validateRequiredField(title, FormFields.title, ValidateErrorMessage.TITLE, isTitleValid);
+  errors = validateRequiredField(title, FormFields.title, ValidateErrorMessage.TITLE, isTitleValid, errors);
 
-  validateRequiredField(type, FormFields.type, ValidateErrorMessage.TYPE, isTypeValid);
+  errors = validateRequiredField(type, FormFields.type, ValidateErrorMessage.TYPE, isTypeValid, errors);
 
-  validateRequiredField(price, FormFields.price, ValidateErrorMessage.PRICE, isPriceValid);
+  errors = validateRequiredField(price, FormFields.price, ValidateErrorMessage.PRICE, isPriceValid, errors);
 
-  validateRequiredField(address, FormFields.address, ValidateErrorMessage.ADDRESS, isAddressValid);
+  errors = validateRequiredField(address, FormFields.address, ValidateErrorMessage.ADDRESS, isAddressValid, errors);
 
-  validateRequiredField(checkin, FormFields.checkin, ValidateErrorMessage.CHECKIN, isCheckValid);
+  errors = validateRequiredField(checkin, FormFields.checkin, ValidateErrorMessage.CHECKIN, isCheckValid, errors);
 
-  validateRequiredField(checkout, FormFields.checkout, ValidateErrorMessage.CHECKOUT, isCheckValid);
+  errors = validateRequiredField(checkout, FormFields.checkout, ValidateErrorMessage.CHECKOUT, isCheckValid, errors);
 
-  validateRoomsField();
+  errors = validateRoomsField(rooms, errors);
 
-  if (!isFeatureFieldValid(features, OFFER_FEATURES)) {
-    errors.push(createErrorMessage(FormFields.features, ValidateErrorMessage.FEATURES));
-  }
+  errors = validateOptionalField(features, FormFields.features, ValidateErrorMessage.FEATURES, isFeatureFieldValid, errors);
 
-  if (avatar && !avatar.mimetype.match(/^image\//)) {
-    errors.push(createErrorMessage(FormFields.avatar, ValidateErrorMessage.IMAGES));
-  }
+  errors = validateOptionalField(avatar, FormFields.avatar, ValidateErrorMessage.IMAGES, isImageValid, errors);
 
-  if (preview && !preview.mimetype.match(/^image\//)) {
-    errors.push(createErrorMessage(FormFields.preview, ValidateErrorMessage.IMAGES));
-  }
+  errors = validateOptionalField(preview, FormFields.preview, ValidateErrorMessage.IMAGES, isImageValid, errors);
 
   if (errors.length > 0) {
     throw new ValidationError(errors);

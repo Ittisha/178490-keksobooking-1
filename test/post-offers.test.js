@@ -6,12 +6,13 @@ const offersStoreMock = require(`./mock/offers-store-mock`);
 const imagesStoreMock = require(`./mock/images-store-mock`);
 const offersRoute = require(`../src/server/routes/router`)(offersStoreMock, imagesStoreMock);
 
-const {StatusCodes,
-  ValidateErrorMessage,
-  Price,
+const {DEFAULT_PATH,
   MAX_ADDRESS_LENGTH,
+  NAMES,
+  Price,
   RoomsQuantity,
-  NAMES} = require(`./../src/server/server-settings`);
+  StatusCodes,
+  ValidateErrorMessage} = require(`./../src/server/server-settings`);
 
 const VALID_POST_OFFER = {
   name: `Anna`,
@@ -31,16 +32,16 @@ const VALID_POST_OFFER = {
 };
 
 const app = express();
-app.use(`/api/offers`, offersRoute);
+app.use(DEFAULT_PATH, offersRoute);
 app.use((req, res) => {
   res.status(StatusCodes.NOT_FOUND).send(`Page was not found`);
 });
 
-describe(`POST /api/offers`, () => {
+describe(`POST ${DEFAULT_PATH}`, () => {
   describe(`POST valid offer`, () => {
     it(`sends correct offer as json`, async () => {
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(VALID_POST_OFFER)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -74,7 +75,7 @@ describe(`POST /api/offers`, () => {
         }
       };
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .field(`name`, VALID_POST_OFFER.name)
         .field(`title`, VALID_POST_OFFER.title)
         .field(`type`, VALID_POST_OFFER.type)
@@ -99,7 +100,7 @@ describe(`POST /api/offers`, () => {
       const offerWithoutTitle = Object.assign({}, VALID_POST_OFFER, {title: ``});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithoutTitle)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -115,7 +116,7 @@ describe(`POST /api/offers`, () => {
       const offerWithNotStringTitle = Object.assign({}, VALID_POST_OFFER, {title: 2222});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithNotStringTitle)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -131,7 +132,7 @@ describe(`POST /api/offers`, () => {
       const shortTitleOffer = Object.assign({}, VALID_POST_OFFER, {title: `wrong`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(shortTitleOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -147,7 +148,7 @@ describe(`POST /api/offers`, () => {
       const longTitleOffer = Object.assign({}, VALID_POST_OFFER, {title: `Small flat in the city centre near the Central Park Small flat in the city centre near the Central Park Small flat in the city centre Central Park`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(longTitleOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -165,7 +166,7 @@ describe(`POST /api/offers`, () => {
       const offerWithoutType = Object.assign({}, VALID_POST_OFFER, {type: ``});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithoutType)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -181,7 +182,7 @@ describe(`POST /api/offers`, () => {
       const unknownTypeOffer = Object.assign({}, VALID_POST_OFFER, {type: `room`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(unknownTypeOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -199,7 +200,7 @@ describe(`POST /api/offers`, () => {
       const offerWithoutPrice = Object.assign({}, VALID_POST_OFFER, {price: void 0});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithoutPrice)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -215,7 +216,7 @@ describe(`POST /api/offers`, () => {
       const offerWithBigPrice = Object.assign({}, VALID_POST_OFFER, {price: 200000});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithBigPrice)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -231,7 +232,7 @@ describe(`POST /api/offers`, () => {
       const offerWithNaNPrice = Object.assign({}, VALID_POST_OFFER, {price: `i'm thinking about it`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithNaNPrice)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -249,7 +250,7 @@ describe(`POST /api/offers`, () => {
       const offerWithoutAddress = Object.assign({}, VALID_POST_OFFER, {address: ``});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithoutAddress)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -265,7 +266,7 @@ describe(`POST /api/offers`, () => {
       const longAddressOffer = Object.assign({}, VALID_POST_OFFER, {address: `1222222222222222222222223eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(longAddressOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -283,7 +284,7 @@ describe(`POST /api/offers`, () => {
       const offerWithoutCheckin = Object.assign({}, VALID_POST_OFFER, {checkin: ``});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithoutCheckin)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -299,7 +300,7 @@ describe(`POST /api/offers`, () => {
       const unvalidChekinOffer = Object.assign({}, VALID_POST_OFFER, {checkin: `99:99`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(unvalidChekinOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -317,7 +318,7 @@ describe(`POST /api/offers`, () => {
       const offerWithoutCheckout = Object.assign({}, VALID_POST_OFFER, {checkin: ``});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithoutCheckout)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -333,7 +334,7 @@ describe(`POST /api/offers`, () => {
       const unvalidChekoutOffer = Object.assign({}, VALID_POST_OFFER, {checkin: `99:99`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(unvalidChekoutOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -351,7 +352,7 @@ describe(`POST /api/offers`, () => {
       const offerWithoutRooms = Object.assign({}, VALID_POST_OFFER, {rooms: void 0});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithoutRooms)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -367,7 +368,7 @@ describe(`POST /api/offers`, () => {
       const offerWithBigRoomsNumber = Object.assign({}, VALID_POST_OFFER, {rooms: 200000});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithBigRoomsNumber)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -383,7 +384,7 @@ describe(`POST /api/offers`, () => {
       const offerWithNaNRooms = Object.assign({}, VALID_POST_OFFER, {rooms: `i'm thinking about it`});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(offerWithNaNRooms)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -398,10 +399,25 @@ describe(`POST /api/offers`, () => {
 
   describe(`Features`, () => {
     it(`should send offer without features`, async () => {
-      const offerWithoutFeatures = Object.assign({}, VALID_POST_OFFER, {features: []});
+      const offerWithoutFeatures = Object.assign({}, VALID_POST_OFFER);
+      delete offerWithoutFeatures.features;
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
+        .send(offerWithoutFeatures)
+        .set(`Accept`, `application/json`)
+        .set(`Content-Type`, `application/json`)
+        .expect(StatusCodes.OK)
+        .expect(`Content-Type`, /json/);
+
+      assert.deepStrictEqual(response.body, offerWithoutFeatures);
+    });
+
+    it(`should send offer with one feature`, async () => {
+      const offerWithoutFeatures = Object.assign({}, VALID_POST_OFFER, {feature: `wifi`});
+
+      const response = await request(app)
+        .post(DEFAULT_PATH)
         .send(offerWithoutFeatures)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -415,7 +431,7 @@ describe(`POST /api/offers`, () => {
       const doubleFeatureOffer = Object.assign({}, VALID_POST_OFFER, {features: [`wifi`, `parking`, `wifi`]});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(doubleFeatureOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -431,7 +447,7 @@ describe(`POST /api/offers`, () => {
       const unknownFeatureOffer = Object.assign({}, VALID_POST_OFFER, {features: [`wifi`, `parking`, `coffee`]});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(unknownFeatureOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -439,6 +455,7 @@ describe(`POST /api/offers`, () => {
         .expect(`Content-Type`, /json/);
 
       const unvalidFeatureErrMessage = response.body[0].errorMessage;
+      console.log(unvalidFeatureErrMessage);
 
       assert.strictEqual(unvalidFeatureErrMessage, ValidateErrorMessage.FEATURES);
     });
@@ -449,7 +466,7 @@ describe(`POST /api/offers`, () => {
       const withoutNameOffer = Object.assign({}, VALID_POST_OFFER, {name: ``});
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .send(withoutNameOffer)
         .set(`Accept`, `application/json`)
         .set(`Content-Type`, `application/json`)
@@ -464,7 +481,7 @@ describe(`POST /api/offers`, () => {
     it(`doesn't send wrong avatar mimetype offer`, async () => {
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .field(`title`, VALID_POST_OFFER.title)
         .field(`type`, VALID_POST_OFFER.type)
         .field(`price`, VALID_POST_OFFER.price)
@@ -488,7 +505,7 @@ describe(`POST /api/offers`, () => {
     it(`doesn't send wrong preview mimetype offer`, async () => {
 
       const response = await request(app)
-        .post(`/api/offers`)
+        .post(DEFAULT_PATH)
         .field(`title`, VALID_POST_OFFER.title)
         .field(`type`, VALID_POST_OFFER.type)
         .field(`price`, VALID_POST_OFFER.price)
