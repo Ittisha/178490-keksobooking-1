@@ -1,14 +1,17 @@
 const colors = require(`colors`);
+
 const AbsctractCommand = require(`./abstract-command`);
-const version = require(`./version`);
-const license = require(`./license`);
+
 const author = require(`./author`);
 const description = require(`./description`);
+const fill = require(`./fill`);
+const license = require(`./license`);
 const server = require(`./server`);
+const version = require(`./version`);
 
-const commands = [version, license, author, description, server];
+const commands = [version, license, author, description, server, fill];
 
-const prefix = `--`;
+const PREFIX = `--`;
 
 class Help extends AbsctractCommand {
 
@@ -17,7 +20,7 @@ class Help extends AbsctractCommand {
   }
 
   _getHelpOutput() {
-    const commandsList = commands.map((command) => `${(prefix + command.name).grey} - ${command.description.green}`).join(`\n`);
+    const commandsList = commands.map((command) => `${(PREFIX + command.name).grey} - ${command.description.green}`).join(`\n`);
 
     return `\nUsage: node index.js <command>\n\nwhere <command> is one of:\n${colors.grey(`--help`)} - ${colors.green(`Shows available commands`)}\n${commandsList}`;
   }

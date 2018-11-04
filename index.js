@@ -1,13 +1,17 @@
+require(`dotenv`).config();
+
 const colors = require(`colors`);
-const {SUCCESS_CODE,
-  ERROR_CODE, PROGRAM_TITLE,
-  COMMAND_PREFIX_LENGH,
-  PATH_ARGS_LENGTH,
-  MAX_PORT,
-  RESERVED_PORT} = require(`./src/utils/util-constants`);
-const {author: authorInfo} = require(`./package.json`);
+
 const help = require(`./src/commands/help`);
 const {parseInitialInput} = require(`./src/input-parser`);
+
+const {ERROR_CODE,
+  MAX_PORT,
+  COMMAND_PREFIX_LENGH,
+  RESERVED_PORT,
+  SUCCESS_CODE,
+  PATH_ARGS_LENGTH,
+  PROGRAM_TITLE} = require(`./src/utils/util-constants`);
 
 const inputArguments = process.argv.slice(PATH_ARGS_LENGTH);
 
@@ -24,28 +28,36 @@ class Program {
     }
   }
 
-  static executeCommand(inputCommands) {
+  static async executeCommand(inputCommands) {
     const command = inputCommands[0];
     const requiredCommand = Program.getModule(command.slice(COMMAND_PREFIX_LENGH));
 
-    if (!requiredCommand) {
-      Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
-      console.log(help.execute());
-      process.exit(ERROR_CODE);
+    switch (true) {
+      case !requiredCommand:
+        Program.printOutput(Program.getErrorMessage(command), ERROR_CODE);
+        console.log(help.execute());
+        process.exit(ERROR_CODE);
+        break;
+
+      case requiredCommand.name === `fill`:
+        const entetiesNumber = inputCommands[1];
+        await requiredCommand.execute(entetiesNumber);
+        process.exit(SUCCESS_CODE);
+        break;
+
+      case requiredCommand.name !== `server`:
+        Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
+        process.exit(SUCCESS_CODE);
+        break;
+
+      default:
+        const port = inputCommands[1];
+        Program.startServer(port, requiredCommand);
     }
-
-    if (requiredCommand.name !== `server`) {
-      Program.printOutput(requiredCommand.execute(), SUCCESS_CODE);
-      process.exit(SUCCESS_CODE);
-    }
-
-    const port = inputCommands[1];
-
-    Program.startServer(port, requiredCommand);
   }
 
   static getGreetingMessage() {
-    return `Hi user!\nThis program will start the server «${PROGRAM_TITLE}».\nAuthor: ${authorInfo}.`;
+    return `Hi user!\nThis program will start the server «${PROGRAM_TITLE}».\n`;
   }
 
   static getErrorMessage(command) {
@@ -75,18 +87,22 @@ class Program {
       case !port:
         serverInstance.execute();
         break;
+
       case !Number.isInteger(portNumber):
-        console.log(`Port number should be integer`);
+        console.error(`Port number should be an integer`);
         process.exit(ERROR_CODE);
         break;
+
       case portNumber === RESERVED_PORT:
-        console.log(`Port 0 is reserved. It should not be used in TCP or UDP messages.`);
+        console.error(`Port 0 is reserved. It should not be used in TCP or UDP messages.`);
         process.exit(ERROR_CODE);
         break;
+
       case portNumber > MAX_PORT:
-        console.log(`Port number should be less than or equal 65535.`);
+        console.error(`Port number should be less than or equal 65535.`);
         process.exit(ERROR_CODE);
         break;
+
       default:
         serverInstance.execute(port);
     }

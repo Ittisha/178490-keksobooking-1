@@ -5,6 +5,8 @@ const {getRandomString,
   shuffleArray,
   getDate} = require(`../../src/utils/util-functions`);
 
+const {NAMES} = require(`../server/server-settings`);
+
 const {OFFER_TITLES,
   BUNGALO_TYPES,
   RoomsNumber,
@@ -25,6 +27,7 @@ const generateEntity = () => {
 
   return {
     'author': {
+      'name': getRandomArrayItem(NAMES),
       'avatar': URL_HOST + getRandomString(),
     },
     'offer': {

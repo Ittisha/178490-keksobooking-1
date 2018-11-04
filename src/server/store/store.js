@@ -1,5 +1,7 @@
 const db = require(`../../database/db`);
 
+const logger = require(`../logger`);
+
 const setupCollection = async () => {
   const dBase = await db;
   const collection = dBase.collection(`offers`);
@@ -18,12 +20,17 @@ class OffersStore {
   }
 
   async getAllOffers() {
-    return (await this.collection).find();
+    return (await this.collection).find({}, {projection: {_id: void 0}});
   }
 
   async save(offerData) {
     return (await this.collection).insertOne(offerData);
   }
+
+  async saveMany(offers) {
+    return (await this.collection).insertMany(offers);
+  }
 }
 
-module.exports = new OffersStore(setupCollection().catch((err) => console.error(`Failed to set up "offers"-collection`, err)));
+module.exports = new OffersStore(setupCollection().catch((err) =>
+  logger.error(`Failed to set up "offers"-collection`, err)));

@@ -38,7 +38,6 @@ class ImageStore {
         .on(`finish`, success);
     });
   }
-
 }
 
 module.exports = new ImageStore();

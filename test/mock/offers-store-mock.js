@@ -1,5 +1,7 @@
 const Cursor = require(`./cursor-mock`);
-const offers = require(`../generate/offers`);
+const offers = require(`../../src/generate/offers`);
+
+const TEST_INSERTED_ID = 42;
 
 class OffersStoreMock {
   constructor(data) {
@@ -13,7 +15,7 @@ class OffersStoreMock {
   }
   async save() {
     return {
-      insertedId: 42
+      insertedId: TEST_INSERTED_ID
     };
   }
 }

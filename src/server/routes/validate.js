@@ -1,13 +1,13 @@
 const ValidationError = require(`../errors/validation-error`);
-const {ValidateErrorMessage,
-  TitleLength,
+const {FormFields,
+  CHECK_IN_OUT_REGEXP,
+  MAX_ADDRESS_LENGTH,
+  OFFER_FEATURES,
   OFFER_TYPES,
   Price,
-  MAX_ADDRESS_LENGTH,
-  CHECK_IN_OUT_REGEXP,
   RoomsQuantity,
-  OFFER_FEATURES,
-  FormFields} = require(`../server-settings`);
+  TitleLength,
+  ValidateErrorMessage} = require(`../server-settings`);
 
 const createErrorMessage = (field, message = ValidateErrorMessage.REQUIRED) => ({
   error: `Validation Error`,
@@ -15,22 +15,25 @@ const createErrorMessage = (field, message = ValidateErrorMessage.REQUIRED) => (
   errorMessage: message
 });
 
+const isAddressValid = (address) => typeof address === `string` && address.length <= MAX_ADDRESS_LENGTH;
+
+const isCheckValid = (time) => typeof time === `string` && !!time.match(CHECK_IN_OUT_REGEXP);
+
+const isPriceValid = (price) => Number(price) && price >= Price.MIN && price <= Price.MAX;
+
 const isTitleValid = (title) =>
   typeof title === `string` && title.length >= TitleLength.MIN && title.length <= TitleLength.MAX;
 
 const isTypeValid = (type) => typeof type === `string` && OFFER_TYPES.find((item) => item === type);
 
-const isPriceValid = (price) => Number(price) && price >= Price.MIN && price <= Price.MAX;
-
-const isAddressValid = (address) => typeof address === `string` && address.length <= MAX_ADDRESS_LENGTH;
-
-const isCheckValid = (time) => typeof time === `string` && !!time.match(CHECK_IN_OUT_REGEXP);
-
 // should make this additional check `|| rooms === RoomsQuantity.MIN` as min rooms number is 0, and Number(0) is read as false
-const isRoomsFieldValid = (rooms) => (Number(rooms) || Number(rooms) === RoomsQuantity.MIN) && rooms >= RoomsQuantity.MIN && rooms <= RoomsQuantity.MAX;
+const isRoomsFieldValid = (rooms) => (Number(rooms) || Number(rooms) === RoomsQuantity.MIN) &&
+rooms >= RoomsQuantity.MIN && rooms <= RoomsQuantity.MAX;
 
 const isFeatureFieldValid = (incomingFeatures, featuresList) => {
-  return !incomingFeatures || (incomingFeatures.every((feature) => featuresList.includes(feature)) && !incomingFeatures.some((feature) => incomingFeatures.indexOf(feature) !== incomingFeatures.lastIndexOf(feature)));
+  return !incomingFeatures || (incomingFeatures.every((feature) =>
+    featuresList.includes(feature)) && !incomingFeatures.some((feature) =>
+    incomingFeatures.indexOf(feature) !== incomingFeatures.lastIndexOf(feature)));
 };
 
 const validate = (data) => {
@@ -94,7 +97,6 @@ const validate = (data) => {
   }
 
   if (errors.length > 0) {
-    console.log(errors);
     throw new ValidationError(errors);
   }
 

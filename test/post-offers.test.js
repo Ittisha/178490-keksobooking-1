@@ -4,7 +4,7 @@ const express = require(`express`);
 
 const offersStoreMock = require(`./mock/offers-store-mock`);
 const imagesStoreMock = require(`./mock/images-store-mock`);
-const offersRoute = require(`../src/server/offers/route`)(offersStoreMock, imagesStoreMock);
+const offersRoute = require(`../src/server/routes/router`)(offersStoreMock, imagesStoreMock);
 
 const {StatusCodes,
   ValidateErrorMessage,
@@ -23,7 +23,11 @@ const VALID_POST_OFFER = {
   guests: 1,
   checkin: `9:00`,
   checkout: `12:00`,
-  features: [`elevator`, `conditioner`]
+  features: [`elevator`, `conditioner`],
+  location: {
+    x: 570,
+    y: 472
+  }
 };
 
 const app = express();
@@ -63,6 +67,10 @@ describe(`POST /api/offers`, () => {
         preview: {
           name: `user02.png`,
           mimetype: `image/png`
+        },
+        location: {
+          x: VALID_POST_OFFER.location.x,
+          y: VALID_POST_OFFER.location.y
         }
       };
       const response = await request(app)
