@@ -59,14 +59,14 @@ const validateOptionalField = (field, fieldName, errorMessage, isValidField, err
   return errorsStore;
 };
 
-const validateRoomsField = (rooms, errorsStore) => {
+const validateRoomsField = (rooms, prevErrorsStore) => {
   if (rooms === undefined) {
-    return [...errorsStore, createErrorMessage(FormFields.rooms)];
+    return [...prevErrorsStore, createErrorMessage(FormFields.rooms)];
   }
   if (!isRoomsFieldValid(rooms)) {
-    return [...errorsStore, createErrorMessage(FormFields.rooms, ValidateErrorMessage.ROOMS)];
+    return [...prevErrorsStore, createErrorMessage(FormFields.rooms, ValidateErrorMessage.ROOMS)];
   }
-  return errorsStore;
+  return prevErrorsStore;
 };
 
 const validate = (data) => {
