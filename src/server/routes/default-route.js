@@ -7,7 +7,8 @@ const {getOfferHtml,
   getPageTemplate} = require(`./get-html-templates`);
 const {asyncMiddleware,
   doesAcceptHtml,
-  getRandomArrayItem} = require(`../../utils/util-functions`);
+  getRandomArrayItem,
+  makeArray} = require(`../../utils/util-functions`);
 const {OFFERS_LIMIT,
   OFFERS_SKIP,
   NAMES} = require(`../server-settings`);
@@ -47,8 +48,8 @@ const prepareForSaving = (receivedOffer) => {
       rooms: receivedOffer.rooms,
       guests: receivedOffer.guests,
       checkin: receivedOffer.checkin,
-      chekout: receivedOffer.chekout,
-      features: receivedOffer.features,
+      checkout: receivedOffer.checkout,
+      features: makeArray(receivedOffer.features),
       photos: []
     },
     location: {
@@ -135,6 +136,7 @@ module.exports = (router) => {
     }
 
     const offerToSend = validatedOffer;
+    validatedOffer.features = makeArray(validatedOffer.features);
     validatedOffer.location = offerToSave.location;
 
     res.send(offerToSend);

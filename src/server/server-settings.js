@@ -8,7 +8,7 @@ module.exports.FormFields = {
   author: `author`,
   avatar: `avatar`,
   checkin: `checkin`,
-  checkout: `chekout`,
+  checkout: `checkout`,
   features: `features`,
   guests: `guests`,
   rooms: `rooms`,
