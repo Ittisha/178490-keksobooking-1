@@ -7,8 +7,10 @@ const {getOfferHtml,
   getPageTemplate} = require(`./get-html-templates`);
 const {asyncMiddleware,
   doesAcceptHtml,
-  getRandomArrayItem} = require(`../../utils/util-functions`);
-const {OFFERS_LIMIT,
+  getRandomArrayItem,
+  makeArray} = require(`../../utils/util-functions`);
+const {DEFAULT_PATH,
+  OFFERS_LIMIT,
   OFFERS_SKIP,
   NAMES} = require(`../server-settings`);
 const validate = require(`./validate`);
@@ -17,7 +19,7 @@ const jsonParser = express.json();
 
 const upload = multer({storage: multer.memoryStorage()}).fields([
   {name: `avatar`, maxCount: 1},
-  {name: `preview`, maxCount: 1}
+  {name: `preview`}
 ]);
 
 const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
@@ -29,6 +31,8 @@ const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
     total: await cursor.count()
   };
 };
+
+const setAvatarUrl = (offerDate) => `${DEFAULT_PATH.substring(0)}/${offerDate}/avatar`;
 
 const prepareForSaving = (receivedOffer) => {
   const [x, y] = receivedOffer.address.split(`,`);
@@ -47,8 +51,8 @@ const prepareForSaving = (receivedOffer) => {
       rooms: receivedOffer.rooms,
       guests: receivedOffer.guests,
       checkin: receivedOffer.checkin,
-      chekout: receivedOffer.chekout,
-      features: receivedOffer.features,
+      checkout: receivedOffer.checkout,
+      features: makeArray(receivedOffer.features),
       photos: []
     },
     location: {
@@ -59,7 +63,7 @@ const prepareForSaving = (receivedOffer) => {
   };
 
   if (receivedOffer.avatar) {
-    offerToSave.author.avatar = `api/offers/${date}/avatar`;
+    offerToSave.author.avatar = setAvatarUrl(date);
   }
 
   return offerToSave;
@@ -103,7 +107,7 @@ module.exports = (router) => {
 
     if (files) {
       avatar = files[`avatar`] ? files[`avatar`][0] : void 0;
-      preview = files[`preview`] ? files[`preview`][0] : void 0;
+      preview = files[`preview`] ? files[`preview`] : void 0;
     }
 
     if (avatar) {
@@ -114,10 +118,10 @@ module.exports = (router) => {
     }
 
     if (preview) {
-      body.preview = {
-        name: preview.originalname,
-        mimetype: preview.mimetype,
-      };
+      body.preview = preview.map((it) => ({
+        name: it.originalname,
+        mimetype: it.mimetype,
+      }));
     }
 
     const validatedOffer = validate(body);
@@ -127,14 +131,19 @@ module.exports = (router) => {
     const {insertedId} = result;
 
     if (avatar) {
-      await router.imagesStore.save(insertedId, toStream(avatar.buffer));
+      await router.avatarStore.save(insertedId, toStream(avatar.buffer));
     }
 
     if (preview) {
-      await router.imagesStore.save(insertedId, toStream(preview.buffer));
+      await preview.forEach((photo, index) => {
+        const photoId = `${insertedId}-${index}`;
+        router.previewStore.save(photoId, toStream(photo.buffer));
+      });
     }
 
     const offerToSend = validatedOffer;
+    validatedOffer.features = makeArray(validatedOffer.features);
+
     validatedOffer.location = offerToSave.location;
 
     res.send(offerToSend);

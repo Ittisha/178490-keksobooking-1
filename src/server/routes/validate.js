@@ -1,4 +1,5 @@
 const ValidationError = require(`../errors/validation-error`);
+
 const {FormFields,
   CHECK_IN_OUT_REGEXP,
   MAX_ADDRESS_LENGTH,
@@ -8,6 +9,8 @@ const {FormFields,
   RoomsQuantity,
   TitleLength,
   ValidateErrorMessage} = require(`../server-settings`);
+
+const {makeArray} = require(`../../utils/util-functions`);
 
 const createErrorMessage = (field, message = ValidateErrorMessage.REQUIRED) => ({
   error: `Validation Error`,
@@ -34,7 +37,7 @@ const isRoomsFieldValid = (rooms) => (Number(rooms) || Number(rooms) === RoomsQu
 rooms >= RoomsQuantity.MIN && rooms <= RoomsQuantity.MAX;
 
 const isFeatureFieldValid = (features) => {
-  const incomingFeatures = Array.isArray(features) ? features : [features];
+  const incomingFeatures = makeArray(features);
   return incomingFeatures.every((feature) =>
     OFFER_FEATURES.includes(feature)) && !incomingFeatures.some((feature) =>
     incomingFeatures.indexOf(feature) !== incomingFeatures.lastIndexOf(feature));
@@ -101,7 +104,10 @@ const validate = (data) => {
 
   errors = validateOptionalField(avatar, FormFields.avatar, ValidateErrorMessage.IMAGES, isImageValid, errors);
 
-  errors = validateOptionalField(preview, FormFields.preview, ValidateErrorMessage.IMAGES, isImageValid, errors);
+  if (preview) {
+    const errorInPreview = preview.some((photo) => !isImageValid(photo));
+    errors = errorInPreview ? [...errors, createErrorMessage(FormFields.preview, ValidateErrorMessage.IMAGES)] : errors;
+  }
 
   if (errors.length > 0) {
     throw new ValidationError(errors);

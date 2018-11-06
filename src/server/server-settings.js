@@ -8,7 +8,7 @@ module.exports.FormFields = {
   author: `author`,
   avatar: `avatar`,
   checkin: `checkin`,
-  checkout: `chekout`,
+  checkout: `checkout`,
   features: `features`,
   guests: `guests`,
   rooms: `rooms`,
@@ -16,6 +16,11 @@ module.exports.FormFields = {
   price: `price`,
   title: `title`,
   type: `type`,
+};
+
+module.exports.ImagesStoreNames = {
+  AVATARS: `avatars`,
+  PREVIEWS: `previews`
 };
 
 module.exports.ImplementedMethods = {

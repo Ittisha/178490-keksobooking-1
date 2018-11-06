@@ -43,7 +43,7 @@ module.exports = (router) => {
       throw new NotFoundError(`Offer with the ${date} date can't be found`);
     }
 
-    const result = await router.imagesStore.get(foundOffer._id);
+    const result = await router.avatarStore.get(foundOffer._id);
 
     if (!result) {
       throw new NotFoundError(`Avatar with date "${date}" can't be found`);

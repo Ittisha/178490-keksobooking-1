@@ -21,7 +21,7 @@ class Help extends AbsctractCommand {
   }
 
   _getHelpOutput() {
-    const commandsList = commands.map((command) => `${(PREFIX + command.name).grey} - ${command.description.green}`).join(`\n`);
+    const commandsList = commands.map((command) => `${(PREFIX).grey}${(command.name).grey} - ${command.description.green}`).join(`\n`);
 
     return `\nUsage: node index.js <command>\n\nwhere <command> is one of:\n${colors.grey(`--help`)} - ${colors.green(`Shows available commands`)}\n${commandsList}`;
   }

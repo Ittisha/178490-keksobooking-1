@@ -5,6 +5,14 @@ module.exports.asyncMiddleware = (fn) => (req, res, next) => fn(req, res, next).
 
 module.exports.doesAcceptHtml = (req) => req.accepts([`json`, `html`]) === `html`;
 
+module.exports.makeArray = (stringOrArray) => {
+  if (stringOrArray) {
+    return Array.isArray(stringOrArray) ? stringOrArray : [stringOrArray];
+  }
+  return [];
+};
+
+
 module.exports.getDate = (timeInterval) => {
   const dateNow = Date.now();
 

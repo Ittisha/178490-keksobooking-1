@@ -2,14 +2,19 @@ const request = require(`supertest`);
 const assert = require(`assert`);
 const express = require(`express`);
 
-const offersStoreMock = require(`./mock/offers-store-mock`);
-const imagesStoreMock = require(`./mock/images-store-mock`);
-const offersRoute = require(`../src/server/routes/router`)(offersStoreMock, imagesStoreMock);
 const offers = require(`../src/generate/offers`);
+const offersStoreMock = require(`./mock/offers-store-mock`);
+const MockImageStore = require(`./mock/images-store-mock`);
 const {DEFAULT_PATH,
+  ImagesStoreNames,
   OFFERS_LIMIT,
   StatusCodes} = require(`./../src/server/server-settings`);
 
+const offersRoute = require(`../src/server/routes/router`)(
+    offersStoreMock,
+    new MockImageStore(ImagesStoreNames.AVATARS),
+    new MockImageStore(ImagesStoreNames.PREVIEWS)
+);
 
 const app = express();
 app.use(DEFAULT_PATH, offersRoute);
