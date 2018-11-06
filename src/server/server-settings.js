@@ -18,6 +18,11 @@ module.exports.FormFields = {
   type: `type`,
 };
 
+module.exports.ImagesStoreNames = {
+  AVATARS: `avatars`,
+  PREVIEWS: `previews`
+};
+
 module.exports.ImplementedMethods = {
   GET: `GET`,
   POST: `POST`

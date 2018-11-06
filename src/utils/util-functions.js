@@ -7,11 +7,11 @@ module.exports.doesAcceptHtml = (req) => req.accepts([`json`, `html`]) === `html
 
 module.exports.makeArray = (stringOrArray) => {
   if (stringOrArray) {
-    return Array.isArray(stringOrArray) ? stringOrArray :
-      [stringOrArray];
+    return Array.isArray(stringOrArray) ? stringOrArray : [stringOrArray];
   }
-  return void 0;
+  return [];
 };
+
 
 module.exports.getDate = (timeInterval) => {
   const dateNow = Date.now();

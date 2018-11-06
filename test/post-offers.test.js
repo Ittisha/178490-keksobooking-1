@@ -3,16 +3,22 @@ const assert = require(`assert`);
 const express = require(`express`);
 
 const offersStoreMock = require(`./mock/offers-store-mock`);
-const imagesStoreMock = require(`./mock/images-store-mock`);
-const offersRoute = require(`../src/server/routes/router`)(offersStoreMock, imagesStoreMock);
+const MockImageStore = require(`./mock/images-store-mock`);
 
 const {DEFAULT_PATH,
+  ImagesStoreNames,
   MAX_ADDRESS_LENGTH,
   NAMES,
   Price,
   RoomsQuantity,
   StatusCodes,
   ValidateErrorMessage} = require(`./../src/server/server-settings`);
+
+const offersRoute = require(`../src/server/routes/router`)(
+    offersStoreMock,
+    new MockImageStore(ImagesStoreNames.AVATARS),
+    new MockImageStore(ImagesStoreNames.PREVIEWS)
+);
 
 const VALID_POST_OFFER = {
   name: `Anna`,
@@ -61,14 +67,15 @@ describe(`POST ${DEFAULT_PATH}`, () => {
         checkin: VALID_POST_OFFER.checkin,
         checkout: VALID_POST_OFFER.checkout,
         rooms: VALID_POST_OFFER.rooms.toString(),
+        features: [],
         avatar: {
           name: `user01.png`,
           mimetype: `image/png`
         },
-        preview: {
+        preview: [{
           name: `user02.png`,
           mimetype: `image/png`
-        },
+        }],
         location: {
           x: VALID_POST_OFFER.location.x,
           y: VALID_POST_OFFER.location.y
@@ -410,7 +417,11 @@ describe(`POST ${DEFAULT_PATH}`, () => {
         .expect(StatusCodes.OK)
         .expect(`Content-Type`, /json/);
 
-      assert.deepStrictEqual(response.body, offerWithoutFeatures);
+      const expectedOffer = Object.assign({}, offerWithoutFeatures, {
+        features: []
+      });
+
+      assert.deepStrictEqual(response.body, expectedOffer);
     });
 
     it(`should send offer with one feature`, async () => {

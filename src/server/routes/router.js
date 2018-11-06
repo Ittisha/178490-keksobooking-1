@@ -13,8 +13,9 @@ enableCors(offersRouter);
 setErrorRoute(offersRouter);
 
 
-module.exports = (offersStore, imagesStore) => {
+module.exports = (offersStore, avatarStore, previewStore) => {
   offersRouter.offersStore = offersStore;
-  offersRouter.imagesStore = imagesStore;
+  offersRouter.avatarStore = avatarStore;
+  offersRouter.previewStore = previewStore;
   return offersRouter;
 };

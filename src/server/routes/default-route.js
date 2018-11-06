@@ -18,7 +18,7 @@ const jsonParser = express.json();
 
 const upload = multer({storage: multer.memoryStorage()}).fields([
   {name: `avatar`, maxCount: 1},
-  {name: `preview`, maxCount: 1}
+  {name: `preview`}
 ]);
 
 const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
@@ -104,7 +104,7 @@ module.exports = (router) => {
 
     if (files) {
       avatar = files[`avatar`] ? files[`avatar`][0] : void 0;
-      preview = files[`preview`] ? files[`preview`][0] : void 0;
+      preview = files[`preview`] ? files[`preview`] : void 0;
     }
 
     if (avatar) {
@@ -115,10 +115,10 @@ module.exports = (router) => {
     }
 
     if (preview) {
-      body.preview = {
-        name: preview.originalname,
-        mimetype: preview.mimetype,
-      };
+      body.preview = preview.map((it) => ({
+        name: it.originalname,
+        mimetype: it.mimetype,
+      }));
     }
 
     const validatedOffer = validate(body);
@@ -128,15 +128,19 @@ module.exports = (router) => {
     const {insertedId} = result;
 
     if (avatar) {
-      await router.imagesStore.save(insertedId, toStream(avatar.buffer));
+      await router.avatarStore.save(insertedId, toStream(avatar.buffer));
     }
 
     if (preview) {
-      await router.imagesStore.save(insertedId, toStream(preview.buffer));
+      await preview.forEach((photo, index) => {
+        const photoId = `${insertedId}-${index}`;
+        router.previewStore.save(photoId, toStream(photo.buffer));
+      });
     }
 
     const offerToSend = validatedOffer;
     validatedOffer.features = makeArray(validatedOffer.features);
+
     validatedOffer.location = offerToSave.location;
 
     res.send(offerToSend);

@@ -1,4 +1,7 @@
 class MockImageStore {
+  constructor(bucketName) {
+    this._bucketName = bucketName;
+  }
 
   async get() {
   }
@@ -9,4 +12,4 @@ class MockImageStore {
 
 }
 
-module.exports = new MockImageStore();
+module.exports = MockImageStore;

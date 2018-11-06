@@ -104,7 +104,10 @@ const validate = (data) => {
 
   errors = validateOptionalField(avatar, FormFields.avatar, ValidateErrorMessage.IMAGES, isImageValid, errors);
 
-  errors = validateOptionalField(preview, FormFields.preview, ValidateErrorMessage.IMAGES, isImageValid, errors);
+  if (preview) {
+    const errorInPreview = preview.some((photo) => !isImageValid(photo));
+    errors = errorInPreview ? [...errors, createErrorMessage(FormFields.preview, ValidateErrorMessage.IMAGES)] : errors;
+  }
 
   if (errors.length > 0) {
     throw new ValidationError(errors);

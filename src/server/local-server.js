@@ -1,22 +1,25 @@
 const express = require(`express`);
-const imagesStore = require(`./store/images-store`);
-const offersStore = require(`./store/store`);
-const offersRouter = require(`./routes/router`)(offersStore, imagesStore);
 const path = require(`path`);
 
+const ImagesStore = require(`./store/images-store`);
+
 const logger = require(`./logger`);
+const offersStore = require(`./store/store`);
+const {ERROR_CODE} = require(`../utils/util-constants`);
+const {SERVER_PORT = DEFAULT_SERVER_PORT,
+  SERVER_HOST = DEFAULT_SERVER_HOST} = process.env;
 
 const {DEFAULT_PATH,
   DEFAULT_SERVER_HOST,
   DEFAULT_SERVER_PORT,
+  ImagesStoreNames,
   ERROR_ADDRESS_IN_USE,
   ImplementedMethods,
   StatusCodes} = require(`./server-settings`);
 
-const {ERROR_CODE} = require(`../utils/util-constants`);
-
-const {SERVER_PORT = DEFAULT_SERVER_PORT,
-  SERVER_HOST = DEFAULT_SERVER_HOST} = process.env;
+const avatarStore = new ImagesStore(ImagesStoreNames.AVATARS);
+const previewStore = new ImagesStore(ImagesStoreNames.PREVIEWS);
+const offersRouter = require(`./routes/router`)(offersStore, avatarStore, previewStore);
 
 const STATIC_DIR = path.join(process.cwd(), `static`);
 
