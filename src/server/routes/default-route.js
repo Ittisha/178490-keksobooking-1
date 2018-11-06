@@ -9,7 +9,8 @@ const {asyncMiddleware,
   doesAcceptHtml,
   getRandomArrayItem,
   makeArray} = require(`../../utils/util-functions`);
-const {OFFERS_LIMIT,
+const {DEFAULT_PATH,
+  OFFERS_LIMIT,
   OFFERS_SKIP,
   NAMES} = require(`../server-settings`);
 const validate = require(`./validate`);
@@ -30,6 +31,8 @@ const toPage = async (cursor, skip = OFFERS_SKIP, limit = OFFERS_LIMIT) => {
     total: await cursor.count()
   };
 };
+
+const setAvatarUrl = (offerDate) => `${DEFAULT_PATH.substring(0)}/${offerDate}/avatar`;
 
 const prepareForSaving = (receivedOffer) => {
   const [x, y] = receivedOffer.address.split(`,`);
@@ -60,7 +63,7 @@ const prepareForSaving = (receivedOffer) => {
   };
 
   if (receivedOffer.avatar) {
-    offerToSave.author.avatar = `api/offers/${date}/avatar`;
+    offerToSave.author.avatar = setAvatarUrl(date);
   }
 
   return offerToSave;
